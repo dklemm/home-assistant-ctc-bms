@@ -219,3 +219,4 @@ __marimo__/
 
 # local HA dev instance (ln -s custom_components into it; see README)
 config/
+.DS_Store
