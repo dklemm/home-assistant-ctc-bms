@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to the CTC controller",
+        "description": "Modbus TCP must be enabled on the controller (Settings → Communication → BMS).",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "device_id": "Modbus device ID (MB address)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "The controller did not answer. Check the address, that Modbus TCP is enabled, and that nothing else is talking to it."
+    },
+    "abort": {
+      "already_configured": "This controller is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "CTC BMS options",
+        "data": {
+          "scan_interval": "Poll interval (seconds)",
+          "heat_pumps": "Heat pumps to create devices for",
+          "zones": "Heating systems (zones) to create devices for",
+          "setpoints": "Create writable setpoint entities"
+        },
+        "data_description": {
+          "heat_pumps": "Detection can miss hardware that is idle (e.g. compressors in summer read 0 everywhere); force-enable it here.",
+          "setpoints": "Number entities that write to the controller (FC16). Disable for a strictly read-only integration."
+        }
+      }
+    }
+  }
+}
