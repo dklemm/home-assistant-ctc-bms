@@ -1,0 +1,6 @@
+# Test/dev dependencies. pytest-homeassistant-custom-component pins the
+# homeassistant version it tests against - keep it current with the HA release
+# you develop on.
+pytest-homeassistant-custom-component
+pymodbus>=3.13,<4
+pypdf  # only for dev/scripts/parse_bms.py (PDF -> bms_registers.json)
