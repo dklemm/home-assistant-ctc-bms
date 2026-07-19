@@ -1,0 +1,4218 @@
+{
+  "schema_version": 1,
+  "generated": "2026-07-14",
+  "generator": "scripts/build_dataset.py",
+  "sources": [
+    {
+      "id": "bms_manual",
+      "title": "CTC BMS Manual",
+      "file": "BMS-Manual-16260016.pdf",
+      "role": "authoritative for registers and protocol"
+    },
+    {
+      "id": "ecologic_ii_brochure",
+      "title": "CTC EcoLogic II M/L/XL",
+      "file": "CTC-EcoLogic-M_L_XL.pdf",
+      "doc_no": "17008029-1",
+      "role": "authoritative for M/L/XL capabilities (p3 matrix)"
+    },
+    {
+      "id": "ecologic_s_brochure",
+      "title": "CTC EcoLogic S EA/EP",
+      "file": "CTC-EcoLogic-S.pdf",
+      "doc_no": "17003569_1",
+      "role": "EcoLogic S; a datasheet, thin on capabilities"
+    }
+  ],
+  "protocol": {
+    "transport": "Modbus TCP",
+    "default_port": 502,
+    "read_function": "FC03 (holding registers)",
+    "write_function": "FC16",
+    "address_offset": 0,
+    "max_registers_per_transfer": 100,
+    "register_base": "registers live above 49999",
+    "word_order_32bit": "LSB first, MSB second (value = MSB << 16 | LSB)",
+    "sentinels": {
+      "-9999": "sensor not fitted",
+      "-10000": "sensor not fitted"
+    },
+    "notes": [
+      "Reading an address the controller does not implement returns SILENCE, not an IllegalDataAddress exception - a wrong address is indistinguishable from a dead link and costs a full timeout.",
+      "A block read succeeds only if EVERY address in it exists.",
+      "The controller accepts one client and one outstanding request at a time; pipelining makes it stop answering entirely."
+    ]
+  },
+  "semantics": {
+    "capability_vs_register_presence": "Capability limits are a FILTER, not a statement about which addresses respond. Every HP1-HP10 and Zone1-Zone4 register answers on any controller; unfitted ones read 0. Use the controller's max_heat_pumps/max_zones to decide what to POLL, and nonzero data to decide what is actually FITTED.",
+    "presence_detection": "'Is this heat pump fitted?' is answered by nonzero data, not by whether the register responds. Note -9999/-10000 is numerically nonzero but means the OPPOSITE - no sensor - so exclude the sentinels before counting.",
+    "units": "INFERRED from each description; the manual gives only a scale factor. Treat as a hint."
+  },
+  "capabilities": [
+    {
+      "key": "heat_pumps_1_2",
+      "label": "Heat pumps 1-2"
+    },
+    {
+      "key": "heat_pumps_3_10",
+      "label": "Heat pumps 3-10"
+    },
+    {
+      "key": "heating_systems_1_2",
+      "label": "Heating systems 1-2"
+    },
+    {
+      "key": "heating_systems_3_4",
+      "label": "Heating systems 3-4"
+    },
+    {
+      "key": "suppl_heat_0_10v",
+      "label": "Supplementary heating 0-10V"
+    },
+    {
+      "key": "suppl_heat_230v",
+      "label": "Supplementary heating 230V"
+    },
+    {
+      "key": "solar",
+      "label": "Solar energy"
+    },
+    {
+      "key": "pool",
+      "label": "Pool"
+    },
+    {
+      "key": "dhw_circulation",
+      "label": "DHW circulation"
+    },
+    {
+      "key": "ventilation",
+      "label": "Ventilation"
+    },
+    {
+      "key": "cooling_passive_ground",
+      "label": "Passive cooling (ground source)"
+    },
+    {
+      "key": "cooling_active_air",
+      "label": "Active cooling (air-to-water)"
+    },
+    {
+      "key": "cooling_active_ground",
+      "label": "Active cooling (ground source)"
+    },
+    {
+      "key": "dual_tank_sensors",
+      "label": "Dual tank sensors"
+    }
+  ],
+  "controllers": [
+    {
+      "id": "ecologic_s_ea",
+      "model": "CTC EcoLogic S EA",
+      "series": "EcoLogic S",
+      "ctc_no": "589560301",
+      "description": "Single heat pump control for CTC EcoAir (air/water).",
+      "max_heat_pumps": 1,
+      "max_zones": null,
+      "caps": {
+        "heat_pumps_1_2": false,
+        "heat_pumps_3_10": false,
+        "heating_systems_1_2": false,
+        "heating_systems_3_4": false,
+        "suppl_heat_0_10v": false,
+        "suppl_heat_230v": false,
+        "solar": false,
+        "pool": false,
+        "dhw_circulation": false,
+        "ventilation": false,
+        "cooling_passive_ground": false,
+        "cooling_active_air": false,
+        "cooling_active_ground": false,
+        "dual_tank_sensors": false
+      },
+      "upgradeable_to": [],
+      "confidence": "partial",
+      "notes": [
+        "Brochure states one heat pump and gives no heating-system count; max_zones is null rather than guessed.",
+        "The brochure never mentions Modbus TCP (only myUplink/internet). Whether the BMS register map applies to EcoLogic S is UNVERIFIED."
+      ]
+    },
+    {
+      "id": "ecologic_s_ep",
+      "model": "CTC EcoLogic S EP",
+      "series": "EcoLogic S",
+      "ctc_no": "589560302",
+      "description": "Single heat pump control for CTC EcoPart (ground source).",
+      "max_heat_pumps": 1,
+      "max_zones": null,
+      "caps": {
+        "heat_pumps_1_2": false,
+        "heat_pumps_3_10": false,
+        "heating_systems_1_2": false,
+        "heating_systems_3_4": false,
+        "suppl_heat_0_10v": false,
+        "suppl_heat_230v": false,
+        "solar": false,
+        "pool": false,
+        "dhw_circulation": false,
+        "ventilation": false,
+        "cooling_passive_ground": false,
+        "cooling_active_air": false,
+        "cooling_active_ground": false,
+        "dual_tank_sensors": false
+      },
+      "upgradeable_to": [],
+      "confidence": "partial",
+      "notes": [
+        "Same caveats as ecologic_s_ea: zone count unstated, Modbus TCP support unverified."
+      ]
+    },
+    {
+      "id": "ecologic_ii_m",
+      "model": "CTC EcoLogic II M",
+      "series": "EcoLogic II",
+      "ctc_no": "591300001",
+      "description": "Smaller systems: up to 2 heat pumps, 2 heating systems.",
+      "max_heat_pumps": 2,
+      "max_zones": 2,
+      "caps": {
+        "heat_pumps_1_2": true,
+        "heat_pumps_3_10": false,
+        "heating_systems_1_2": true,
+        "heating_systems_3_4": false,
+        "suppl_heat_0_10v": false,
+        "suppl_heat_230v": true,
+        "solar": false,
+        "pool": false,
+        "dhw_circulation": false,
+        "ventilation": true,
+        "cooling_passive_ground": false,
+        "cooling_active_air": false,
+        "cooling_active_ground": false,
+        "dual_tank_sensors": false
+      },
+      "upgradeable_to": [
+        "ecologic_ii_l"
+      ],
+      "confidence": "brochure",
+      "notes": []
+    },
+    {
+      "id": "ecologic_ii_l",
+      "model": "CTC EcoLogic II L",
+      "series": "EcoLogic II",
+      "ctc_no": "591301001",
+      "description": "Large installations: up to 10 heat pumps, 4 heating systems, pool, solar, cooling.",
+      "max_heat_pumps": 10,
+      "max_zones": 4,
+      "caps": {
+        "heat_pumps_1_2": true,
+        "heat_pumps_3_10": true,
+        "heating_systems_1_2": true,
+        "heating_systems_3_4": true,
+        "suppl_heat_0_10v": true,
+        "suppl_heat_230v": true,
+        "solar": true,
+        "pool": true,
+        "dhw_circulation": true,
+        "ventilation": true,
+        "cooling_passive_ground": true,
+        "cooling_active_air": true,
+        "cooling_active_ground": false,
+        "dual_tank_sensors": false
+      },
+      "upgradeable_to": [
+        "ecologic_ii_xl"
+      ],
+      "confidence": "brochure",
+      "notes": []
+    },
+    {
+      "id": "ecologic_ii_xl",
+      "model": "CTC EcoLogic II XL",
+      "series": "EcoLogic II",
+      "ctc_no": "591302001",
+      "description": "Maximum capacity: everything L has, plus active ground source cooling and dual tank sensors.",
+      "max_heat_pumps": 10,
+      "max_zones": 4,
+      "caps": {
+        "heat_pumps_1_2": true,
+        "heat_pumps_3_10": true,
+        "heating_systems_1_2": true,
+        "heating_systems_3_4": true,
+        "suppl_heat_0_10v": true,
+        "suppl_heat_230v": true,
+        "solar": true,
+        "pool": true,
+        "dhw_circulation": true,
+        "ventilation": true,
+        "cooling_passive_ground": true,
+        "cooling_active_air": true,
+        "cooling_active_ground": true,
+        "dual_tank_sensors": true
+      },
+      "upgradeable_to": [],
+      "confidence": "brochure",
+      "notes": []
+    }
+  ],
+  "registers": {
+    "system": [
+      {
+        "address": 61500,
+        "name": "sDHWMode",
+        "description": "Hot water mode 0=Ecomony, 1=Normal, 2=Comfort",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61501,
+        "name": "sDHWManStopTemp",
+        "description": "Manual Stop temperature hot water",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61502,
+        "name": "sDHWTempOut",
+        "description": "Setting outlet temperature hot water",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61503,
+        "name": "sDHWTimerExtra",
+        "description": "Extra hot water timer",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.5,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61504,
+        "name": "HeatMaxTime",
+        "description": "Maximum time heating Heat pump",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "h",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61505,
+        "name": "sDHWMaxTime",
+        "description": "Maximum time hot water",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "h",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61506,
+        "name": "sDHWMinRPS",
+        "description": "Minimum RPS hot water",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "rps",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61507,
+        "name": "sPoolMinRPS",
+        "description": "Minimum RPS Pool",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "rps",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 61508,
+        "name": "sVacationDaysTimer",
+        "description": "Number of vacation days timer",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "days",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61531,
+        "name": "poolTempStopSetting",
+        "description": "Pool: Stop Temp setting",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 61532,
+        "name": "poolMaxTime",
+        "description": "Pool: Maximum time",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "h",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 61533,
+        "name": "poolDiffStart",
+        "description": "Pool: Start difference",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 61570,
+        "name": "hsChargePumpSetting",
+        "description": "Radiator pump setting %",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61571,
+        "name": "hpDMStart",
+        "description": "Start at degree minute",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "DM",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61582,
+        "name": "exb1DMStart",
+        "description": "E1: Start add heat, degree minute",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "DM",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61583,
+        "name": "exb1Diff",
+        "description": "External boiler diff",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61584,
+        "name": "exbBlockOutTemp",
+        "description": "Blocking additional heat outdoor temp ºC",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61585,
+        "name": "exbBoilerShuntTemp",
+        "description": "Boiler , open mixing valve ºC",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61586,
+        "name": "exbBoilerDelayStop",
+        "description": "Delay stop external boiler",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61587,
+        "name": "exbMode",
+        "description": "Ext boiler mode 0=Auto, 1=On, 2=Off",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61588,
+        "name": "ehsStartDegrees",
+        "description": "EHS: open shunt degrees",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61589,
+        "name": "ehsDiffStartStop",
+        "description": "EHS: start / stop diff",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61590,
+        "name": "elhMaxPower",
+        "description": "Max immersion heater kW / Lower",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "kW",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61591,
+        "name": "elhDHWMaxPower",
+        "description": "Max immersion heater DHW kW / Upper",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "kW",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61610,
+        "name": "hpXDMDiff",
+        "description": "Heat pump : Diff Heat pump , degree minute",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "DM",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61611,
+        "name": "hpXDMDelay",
+        "description": "Heat pump : Delay between Heat pump",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61612,
+        "name": "ex1DMDiff",
+        "description": "E1: Diff add heat, degree minute",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "DM",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61613,
+        "name": "ex2DMStart",
+        "description": "E2: Start 0-10V degree minute",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "DM",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61614,
+        "name": "ex2DMDiff",
+        "description": "E2: Diff 0-10V, degree minute",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "DM",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61615,
+        "name": "ex3DMStart",
+        "description": "E3: Start EcoMiniEl, degree minute",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "DM",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61616,
+        "name": "ex3StepsHeat",
+        "description": "E3: Number of steps heating",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61617,
+        "name": "ex3StepsDHW",
+        "description": "E3: Number of steps DHW",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61618,
+        "name": "ex3EMEDiffSteps",
+        "description": "E3: Diff step EcoMiniEl",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61619,
+        "name": "ex1Delay",
+        "description": "E1: Delay add heat E1",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61620,
+        "name": "ex2Delay",
+        "description": "E2: Delay add heat 0-10V",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61621,
+        "name": "ex2DiffDelay",
+        "description": "E2: Diff 0-10V delay",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61622,
+        "name": "ex3EMEDelay",
+        "description": "E3: Delay EcoMiniEl",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61623,
+        "name": "ex3EMEDelaySteps",
+        "description": "E3: Delay EcoMiniEl step",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61624,
+        "name": "coolPrimaryOut20",
+        "description": "Cooling: Primary flow at the outdoor temperature +20 ºC",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61625,
+        "name": "coolPrimaryOut40",
+        "description": "Cooling: Primary flow at the outdoor temperature +40 ºC",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61626,
+        "name": "coolPrimaryMin",
+        "description": "Cooling: Min flow temperature",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61629,
+        "name": "sMixValveDelaySet",
+        "description": "Delay mixing valve setting 241=Off",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61630,
+        "name": "woodFlueGasTempStart",
+        "description": "Wood boiler start flue gas 490=Off",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61631,
+        "name": "woodBoilerTempStart",
+        "description": "Wood boiler start boiler temperature",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61632,
+        "name": "woodHysteresis",
+        "description": "Wood boiler hysteresis",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61633,
+        "name": "elhLowerSetp",
+        "description": "Boiler lower °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61634,
+        "name": "elhUpperSetp",
+        "description": "Boiler upper °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61635,
+        "name": "elhAddHeatSetp",
+        "description": "Boiler add heat °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61636,
+        "name": "elhDHWAddHeatSetp",
+        "description": "Boiler DHW °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61637,
+        "name": "dthDiffTempStart",
+        "description": "Diff thermostat start temp diff",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "diff_thermostat",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61638,
+        "name": "dthDiffTempStop",
+        "description": "Diff thermostat stop temp diff",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "diff_thermostat",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61639,
+        "name": "dthChargeTemp",
+        "description": "Diff thermostat charge temperature",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "diff_thermostat",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61640,
+        "name": "sunDiffTempStart",
+        "description": "EcoLogic / EcoZenith i550: Solar deltaT max Other: Solar start charge ",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61641,
+        "name": "sunDiffTempStop",
+        "description": "EcoLogic / EcoZenith i550: Solar deltaT min Other: Solar stop charge d",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61642,
+        "name": "sunChargePumpMin",
+        "description": "Solar charge pump min",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61643,
+        "name": "sunDiffDrillTempStart",
+        "description": "EcoLogic / EcoZenith i550: Solar deltaT max borehole Other: Solar bore",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61644,
+        "name": "sunDiffDrillTempStop",
+        "description": "EcoLogic / EcoZenith i550: Solar deltaT min borehole Other: Solar bore",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61645,
+        "name": "sunMainTankChargeTemp",
+        "description": "EcoHeat 400 / EcoZenith i250: Solar H-tank charge temp GSi/EcoZenith i",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61646,
+        "name": "sunExtraTankChargeTemp",
+        "description": "Solar: X-tank charge temp",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61647,
+        "name": "sunEcoTankChargeTemp",
+        "description": "Solar: Eco-tank charge temp",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61648,
+        "name": "sunMainTankDiffTempStart",
+        "description": "EcoHeat 400 / EcoZenith i250: Solar charge H-tank start difference GSi",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61649,
+        "name": "sunMainTankDiffTempStop",
+        "description": "EcoHeat 400 / EcoZenith i250: Solar H-tank charge stop difference GSi/",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61650,
+        "name": "sunMainTankTempStop",
+        "description": "EcoHeat 400 / EcoZenith i250: Solar H-tank charge stop temperature GSi",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 61651,
+        "name": "woodTankReturnDelay",
+        "description": "Wood boiler buffer tank delay recharge time",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 61652,
+        "name": "sElHeaterTankUpperSetp",
+        "description": "Setpoint for upper tank when el. heater is used",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61653,
+        "name": "sDHWCapacityStart",
+        "description": "Capacity start point for charging DHW",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61654,
+        "name": "sDHWLowerStartTemp",
+        "description": "Lower temp sensor start point for charging DHW",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 61655,
+        "name": "sVentilationMode",
+        "description": "Ventilation mode",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "ventilation",
+        "requires_any_capability": [
+          "ventilation"
+        ]
+      },
+      {
+        "address": 61656,
+        "name": "sVentNightcoolValue",
+        "description": "Turn night cooling on or off",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "ventilation",
+        "requires_any_capability": [
+          "ventilation"
+        ]
+      },
+      {
+        "address": 61657,
+        "name": "sVentAwayMode",
+        "description": "Ventilation away mode",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "ventilation",
+        "requires_any_capability": [
+          "ventilation"
+        ]
+      },
+      {
+        "address": 61658,
+        "name": "pool_enable",
+        "description": "Pool Enable",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 61659,
+        "name": "room_temp_cooling",
+        "description": "Room temp cooling",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61660,
+        "name": "cooling_permitted_from_outdoor_temp_c",
+        "description": "Cooling permitted from outdoor temp °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61661,
+        "name": "cooling_delay_active_minutes",
+        "description": "Cooling delay active (minutes)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61662,
+        "name": "delay_cooling_from_heating_off_minutes",
+        "description": "Delay cooling from heating off (minutes)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61663,
+        "name": "cooling_start_delay_minutes",
+        "description": "Cooling start delay (minutes)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61664,
+        "name": "cooling_diff_calc_delay_minutes",
+        "description": "Cooling diff calc delay (minutes)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61665,
+        "name": "primary_flow_temp_at_outdoor_20_c",
+        "description": "Primary flow temp at outdoor +20 °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61666,
+        "name": "primary_flow_temp_at_outdoor_40_c",
+        "description": "Primary flow temp at outdoor +40 °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61667,
+        "name": "primary_flow_diff_at_outdoor_20_c",
+        "description": "Primary flow diff at outdoor +20 °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61668,
+        "name": "primary_flow_diff_at_outdoor_40_c",
+        "description": "Primary flow diff at outdoor +40 °C",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61669,
+        "name": "cooling_max_time_hp_active_minutes",
+        "description": "Cooling max time HP active (minutes)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "h",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61670,
+        "name": "cooling_hp_charge_pump_speed",
+        "description": "Cooling HP Charge pump speed",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61671,
+        "name": "heating_program_hc1_0_economy_1_normal_2",
+        "description": "Heating program HC1 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61672,
+        "name": "heating_program_hc2_0_economy_1_normal_2",
+        "description": "Heating program HC2 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61673,
+        "name": "heating_program_hc3_0_economy_1_normal_2",
+        "description": "Heating program HC3 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61674,
+        "name": "heating_program_hc4_0_economy_1_normal_2",
+        "description": "Heating program HC4 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61675,
+        "name": "hc1_heating_curve_point_1_x_value_outsid",
+        "description": "HC1 Heating curve point 1 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61676,
+        "name": "hc1_heating_curve_point_1_y_value_setp_t",
+        "description": "HC1 Heating curve point 1 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61677,
+        "name": "hc1_heating_curve_point_2_x_value_outsid",
+        "description": "HC1 Heating curve point 2 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61678,
+        "name": "hc1_heating_curve_point_2_y_value_setp_t",
+        "description": "HC1 Heating curve point 2 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61679,
+        "name": "hc1_heating_curve_point_3_x_value_outsid",
+        "description": "HC1 Heating curve point 3 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61680,
+        "name": "hc1_heating_curve_point_3_y_value_setp_t",
+        "description": "HC1 Heating curve point 3 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61681,
+        "name": "hc1_heating_curve_point_4_x_value_outsid",
+        "description": "HC1 Heating curve point 4 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61682,
+        "name": "hc1_heating_curve_point_4_y_value_setp_t",
+        "description": "HC1 Heating curve point 4 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61683,
+        "name": "hc1_heating_curve_point_5_x_value_outsid",
+        "description": "HC1 Heating curve point 5 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61684,
+        "name": "hc1_heating_curve_point_5_y_value_setp_t",
+        "description": "HC1 Heating curve point 5 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61685,
+        "name": "hc2_heating_curve_point_1_x_value_outsid",
+        "description": "HC2 Heating curve point 1 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61686,
+        "name": "hc2_heating_curve_point_1_y_value_setp_t",
+        "description": "HC2 Heating curve point 1 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61687,
+        "name": "hc2_heating_curve_point_2_x_value_outsid",
+        "description": "HC2 Heating curve point 2 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61688,
+        "name": "hc2_heating_curve_point_2_y_value_setp_t",
+        "description": "HC2 Heating curve point 2 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61689,
+        "name": "hc2_heating_curve_point_3_x_value_outsid",
+        "description": "HC2 Heating curve point 3 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61690,
+        "name": "hc2_heating_curve_point_3_y_value_setp_t",
+        "description": "HC2 Heating curve point 3 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61691,
+        "name": "hc2_heating_curve_point_4_x_value_outsid",
+        "description": "HC2 Heating curve point 4 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61692,
+        "name": "hc2_heating_curve_point_4_y_value_setp_t",
+        "description": "HC2 Heating curve point 4 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61693,
+        "name": "hc2_heating_curve_point_5_x_value_outsid",
+        "description": "HC2 Heating curve point 5 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61694,
+        "name": "hc2_heating_curve_point_5_y_value_setp_t",
+        "description": "HC2 Heating curve point 5 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61695,
+        "name": "hc3_heating_curve_point_1_x_value_outsid",
+        "description": "HC3 Heating curve point 1 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61696,
+        "name": "hc3_heating_curve_point_1_y_value_setp_t",
+        "description": "HC3 Heating curve point 1 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61697,
+        "name": "hc3_heating_curve_point_2_x_value_outsid",
+        "description": "HC3 Heating curve point 2 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61698,
+        "name": "hc3_heating_curve_point_2_y_value_setp_t",
+        "description": "HC3 Heating curve point 2 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61699,
+        "name": "hc3_heating_curve_point_3_x_value_outsid",
+        "description": "HC3 Heating curve point 3 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61700,
+        "name": "hc3_heating_curve_point_3_y_value_setp_t",
+        "description": "HC3 Heating curve point 3 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61701,
+        "name": "hc3_heating_curve_point_4_x_value_outsid",
+        "description": "HC3 Heating curve point 4 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61702,
+        "name": "hc3_heating_curve_point_4_y_value_setp_t",
+        "description": "HC3 Heating curve point 4 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61703,
+        "name": "hc3_heating_curve_point_5_x_value_outsid",
+        "description": "HC3 Heating curve point 5 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61704,
+        "name": "hc3_heating_curve_point_5_y_value_setp_t",
+        "description": "HC3 Heating curve point 5 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61705,
+        "name": "hc4_heating_curve_point_1_x_value_outsid",
+        "description": "HC4 Heating curve point 1 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61706,
+        "name": "hc4_heating_curve_point_1_y_value_setp_t",
+        "description": "HC4 Heating curve point 1 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61707,
+        "name": "hc4_heating_curve_point_2_x_value_outsid",
+        "description": "HC4 Heating curve point 2 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61708,
+        "name": "hc4_heating_curve_point_2_y_value_setp_t",
+        "description": "HC4 Heating curve point 2 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61709,
+        "name": "hc4_heating_curve_point_3_x_value_outsid",
+        "description": "HC4 Heating curve point 3 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61710,
+        "name": "hc4_heating_curve_point_3_y_value_setp_t",
+        "description": "HC4 Heating curve point 3 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61711,
+        "name": "hc4_heating_curve_point_4_x_value_outsid",
+        "description": "HC4 Heating curve point 4 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61712,
+        "name": "hc4_heating_curve_point_4_y_value_setp_t",
+        "description": "HC4 Heating curve point 4 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61713,
+        "name": "hc4_heating_curve_point_5_x_value_outsid",
+        "description": "HC4 Heating curve point 5 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61714,
+        "name": "hc4_heating_curve_point_5_y_value_setp_t",
+        "description": "HC4 Heating curve point 5 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 61715,
+        "name": "cooling_curve_point_1_x_value_outside_te",
+        "description": "Cooling curve point 1 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61716,
+        "name": "cooling_curve_point_1_y_value_setp_temp",
+        "description": "Cooling curve point 1 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61717,
+        "name": "cooling_curve_point_2_x_value_outside_te",
+        "description": "Cooling curve point 2 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61718,
+        "name": "cooling_curve_point_2_y_value_setp_temp",
+        "description": "Cooling curve point 2 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61719,
+        "name": "cooling_curve_point_3_x_value_outside_te",
+        "description": "Cooling curve point 3 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61720,
+        "name": "cooling_curve_point_3_y_value_setp_temp",
+        "description": "Cooling curve point 3 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61721,
+        "name": "cooling_curve_point_4_x_value_outside_te",
+        "description": "Cooling curve point 4 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61722,
+        "name": "cooling_curve_point_4_y_value_setp_temp",
+        "description": "Cooling curve point 4 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61723,
+        "name": "cooling_curve_point_5_x_value_outside_te",
+        "description": "Cooling curve point 5 x-value (outside temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 61724,
+        "name": "cooling_curve_point_5_y_value_setp_temp",
+        "description": "Cooling curve point 5 y-value (setp temp)",
+        "access": "RW",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62000,
+        "name": "sOutsideTemp",
+        "description": "Outdoor temperature",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62001,
+        "name": "sStopTempDHW",
+        "description": "Stop temperature DHW",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62002,
+        "name": "sSetPDHW",
+        "description": "Setpoint outlet temperature DHW",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62003,
+        "name": "sDHWTemp",
+        "description": "Hot water temperature",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62004,
+        "name": "sMixValveDelay",
+        "description": "Delay mixing valve",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62005,
+        "name": "sStatus",
+        "description": "Status 0: HP upper , 1: HP lower , 2: Add 3: HP + Add, 4: HC, 5: DHW 6",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62006,
+        "name": "sRadiatorTemp",
+        "description": "Radiator Water",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62015,
+        "name": "sReturnTemp",
+        "description": "Return temp",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62016,
+        "name": "sDHWPump",
+        "description": "DHW circulation",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "%",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62167,
+        "name": "sDM",
+        "description": "Degree minute",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "DM",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62168,
+        "name": "sPowerConsumption",
+        "description": "Power kW immersion heater",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "kW",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62169,
+        "name": "sPowerConsumptionHS",
+        "description": "Power kW immersion heater lower",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "kW",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62170,
+        "name": "sCurrent",
+        "description": "Maximum current",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62171,
+        "name": "s1Current",
+        "description": "Current L1",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62172,
+        "name": "s2Current",
+        "description": "Current L2",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62173,
+        "name": "s3Current",
+        "description": "Current L3",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62174,
+        "name": "sDiffThermostatPump",
+        "description": "Pump Diff thermostat",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "%",
+        "words": 1,
+        "group": "diff_thermostat",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62175,
+        "name": "sDiffThermostatTemp",
+        "description": "Diff thermostat ° C",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "diff_thermostat",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62176,
+        "name": "ehsTemp",
+        "description": "EHS: Temperature",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62177,
+        "name": "ehsStatus",
+        "description": "EHS: Primary flow -> Mode",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62178,
+        "name": "poolStatus",
+        "description": "Pool Mode",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 62179,
+        "name": "poolTemp",
+        "description": "Pool: Temperature",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 62180,
+        "name": "poolTempStop",
+        "description": "Pool: Stop temperature",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "pool",
+        "requires_any_capability": [
+          "pool"
+        ]
+      },
+      {
+        "address": 62181,
+        "name": "sunStatus",
+        "description": "Solar: Mode 0=Off, 1=On",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 62182,
+        "name": "sunTempOut",
+        "description": "Solar: Temperature out",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 62183,
+        "name": "sunTempIn",
+        "description": "Solar: Temperature in",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 62184,
+        "name": "sunPump",
+        "description": "Solar: Pump panel",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "%",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 62185,
+        "name": "sTankTimer",
+        "description": "Tank Timer",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62186,
+        "name": "sTotalTime",
+        "description": "Stat: Total Operation LSB",
+        "access": "R",
+        "dtype": "U32",
+        "scale": 1.0,
+        "unit": "h",
+        "words": 2,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62191,
+        "name": "sElHeaterConsumption",
+        "description": "Stat: Immersion heater kWh",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "kWh",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62192,
+        "name": "sFuncTest",
+        "description": "Function Test",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62207,
+        "name": "sSystemType",
+        "description": "System Type",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62208,
+        "name": "woodFlueGasTemp",
+        "description": "Wood: Flue gas temperature (B8)",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62209,
+        "name": "woodBoilerTemp",
+        "description": "Wood: Temperature boiler (B9)",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62210,
+        "name": "ex1BoilerTemp",
+        "description": "E1: Boiler temperature (B9)",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62211,
+        "name": "ex1BoilerTempOut",
+        "description": "E1: Temperature boiler out (B10)",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62212,
+        "name": "ex2Steps",
+        "description": "E2: Number of steps",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62213,
+        "name": "ex3Status",
+        "description": "E3: Status",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62244,
+        "name": "sSoftwareVersionMD",
+        "description": "Software version Display month day",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "days",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62245,
+        "name": "sSoftwareVersionYear",
+        "description": "Software version Display year",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62250,
+        "name": "exbUpperTemp",
+        "description": "Ext buffer tank upper B41",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62251,
+        "name": "exbLowerTemp",
+        "description": "Ext buffer tank lower B42",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62252,
+        "name": "exbDHWTemp",
+        "description": "Ext DHW buffer tank B43",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62253,
+        "name": "sProductType",
+        "description": "Product type",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62274,
+        "name": "sTankLowerSetp",
+        "description": "Setpoint lower tank",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62275,
+        "name": "sDHWLowerTemp",
+        "description": "Actual temperature DHW lower",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62276,
+        "name": "sDHWUpperTemp",
+        "description": "Actual temperature DHW",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62277,
+        "name": "sSunTankTemp",
+        "description": "Actual temperature tank solar coil",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "solar",
+        "requires_any_capability": [
+          "solar"
+        ]
+      },
+      {
+        "address": 62278,
+        "name": "sElHeaterTankUpperCalcSetp",
+        "description": "Calculated setpoint for upper tank when el. heater is used",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62279,
+        "name": "sDHWCapacity",
+        "description": "Current DHW capacity in percent",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "%",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62280,
+        "name": "sFanExhaustPct",
+        "description": "Exhaust fan speed percent",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "%",
+        "words": 1,
+        "group": "ventilation",
+        "requires_any_capability": [
+          "ventilation"
+        ]
+      },
+      {
+        "address": 62281,
+        "name": "sHighestCO2",
+        "description": "Highest measured CO2",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62282,
+        "name": "sHighestRH",
+        "description": "Highest measured humidity",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62283,
+        "name": "sVentMaintFilterDays",
+        "description": "Days until filter maintenance",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "days",
+        "words": 1,
+        "group": "ventilation",
+        "requires_any_capability": [
+          "ventilation"
+        ]
+      },
+      {
+        "address": 62284,
+        "name": "sVentNightcoolStatus",
+        "description": "Ventilation night cooling status",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "ventilation",
+        "requires_any_capability": [
+          "ventilation"
+        ]
+      },
+      {
+        "address": 62288,
+        "name": "cooling_tank_setp",
+        "description": "Cooling tank setp",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62289,
+        "name": "cooling_tank_temp",
+        "description": "Cooling tank temp",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62290,
+        "name": "active_cooling_return_temp",
+        "description": "Active cooling return temp",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62301,
+        "name": "sgmode_0_none_normal_1_block_2_low_price",
+        "description": "SGMode 0 = None/Normal, 1 = Block, 2 = Low price, 3 = High cap",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62302,
+        "name": "elspot_price_mwh_integer_currency_depend",
+        "description": "Elspot Price/MWh Integer (Currency depending on region)",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62303,
+        "name": "elspot_price_mwh_4_decimals",
+        "description": "Elspot Price/MWh 4 decimals",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62304,
+        "name": "radiatorpump1",
+        "description": "RadiatorPump1",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62305,
+        "name": "radiatorpump2",
+        "description": "RadiatorPump2",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62306,
+        "name": "radiatorpump3_g3",
+        "description": "RadiatorPump3_G3",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62307,
+        "name": "radiatorpump4_g4",
+        "description": "RadiatorPump4_G4",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62312,
+        "name": "pumpg41_extern_dhw",
+        "description": "PumpG41 Extern DHW",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62313,
+        "name": "hotwatervalve",
+        "description": "HotWaterValve",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62314,
+        "name": "extboileron",
+        "description": "ExtBoilerOn",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62315,
+        "name": "el1_relay_bit_0_a_bit_1_b",
+        "description": "EL1 Relay Bit 0: A, Bit 1: B",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62316,
+        "name": "el2_relay_bit_0_a_bit_1_b",
+        "description": "EL2 Relay Bit 0: A, Bit 1: B",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62317,
+        "name": "el3_relay_bit_0_a_bit_1_b",
+        "description": "EL3 Relay Bit 0: A, Bit 1: B",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62318,
+        "name": "elheater3_6kw",
+        "description": "ElHeater3_6kW",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "additional_heat",
+        "requires_any_capability": [
+          "suppl_heat_0_10v",
+          "suppl_heat_230v"
+        ]
+      },
+      {
+        "address": 62319,
+        "name": "evk_shunt_state_0_close_1_inactive_2_ope",
+        "description": "EVK: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62320,
+        "name": "extboiler_shunt_state_0_close_1_inactive",
+        "description": "ExtBoiler: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62321,
+        "name": "active_cooling_valve",
+        "description": "Active Cooling: Valve",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62322,
+        "name": "active_cooling_demand",
+        "description": "Active Cooling: Demand",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62323,
+        "name": "dhwpump_0_100",
+        "description": "DHWPump: 0-100",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62324,
+        "name": "solartankselection",
+        "description": "SolarTankSelection",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62325,
+        "name": "solarbedrockselection",
+        "description": "SolarBedrockSelection",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62326,
+        "name": "hotwatervalve2",
+        "description": "HotWaterValve2",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62327,
+        "name": "e4",
+        "description": "E4",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62328,
+        "name": "e1",
+        "description": "E1",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62330,
+        "name": "current_room_temp_cooling",
+        "description": "Current room temp cooling",
+        "access": "R",
+        "dtype": "S16",
+        "scale": 0.1,
+        "unit": "°C",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62362,
+        "name": "hbt_top_temp",
+        "description": "HBT top temp",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "core",
+        "requires_any_capability": []
+      },
+      {
+        "address": 62363,
+        "name": "dhw_tank_top_temp",
+        "description": "DHW tank top temp",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      },
+      {
+        "address": 62364,
+        "name": "cooling_tank_top_temp",
+        "description": "Cooling tank top temp",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "cooling",
+        "requires_any_capability": [
+          "cooling_passive_ground",
+          "cooling_active_air",
+          "cooling_active_ground"
+        ]
+      },
+      {
+        "address": 62365,
+        "name": "periodic_extra_dhw_status_0_periodic_ext",
+        "description": "Periodic extra DHW status 0 = periodic extra DHW not defined 1 = perio",
+        "access": "R",
+        "dtype": "U16",
+        "scale": 1.0,
+        "unit": "",
+        "words": 1,
+        "group": "dhw",
+        "requires_any_capability": [
+          "dhw_circulation"
+        ]
+      }
+    ],
+    "families": {
+      "heat_pump": {
+        "label": "Heat pump",
+        "instance_label": "HP{n}",
+        "max_instances": 10,
+        "limited_by": "max_heat_pumps",
+        "addressing": "base_address + (n-1) * stride",
+        "fields": [
+          {
+            "field": "Blocked",
+            "key": "hp{n}Blocked",
+            "base_address": 61521,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Blocked 0=Blocked, 1=Allowed",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61521,
+              "2": 61522,
+              "3": 61523,
+              "4": 61524,
+              "5": 61525,
+              "6": 61526,
+              "7": 61527,
+              "8": 61528,
+              "9": 61529,
+              "10": 61530
+            }
+          },
+          {
+            "field": "RPSMax",
+            "key": "hp{n}RPSMax",
+            "base_address": 61572,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Max RPS",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "rps",
+            "words": 1,
+            "addresses": {
+              "1": 61572,
+              "2": 61573,
+              "3": 61574,
+              "4": 61575,
+              "5": 61576,
+              "6": 61577,
+              "7": 61578,
+              "8": 61579,
+              "9": 61580,
+              "10": 61581
+            }
+          },
+          {
+            "field": "Status",
+            "key": "hp{n}Status",
+            "base_address": 62017,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Status 0=Compressor_off_start_delay, 1=Compressor_of",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62017,
+              "2": 62018,
+              "3": 62019,
+              "4": 62020,
+              "5": 62021,
+              "6": 62022,
+              "7": 62023,
+              "8": 62024,
+              "9": 62025,
+              "10": 62026
+            }
+          },
+          {
+            "field": "TempIn",
+            "key": "hp{n}TempIn",
+            "base_address": 62027,
+            "stride": 1,
+            "description": "Heat pump 1 (A1) HP in",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62027,
+              "2": 62028,
+              "3": 62029,
+              "4": 62030,
+              "5": 62031,
+              "6": 62032,
+              "7": 62033,
+              "8": 62034,
+              "9": 62035,
+              "10": 62036
+            }
+          },
+          {
+            "field": "TempOut",
+            "key": "hp{n}TempOut",
+            "base_address": 62037,
+            "stride": 1,
+            "description": "Heat pump 1 (A1) HP out",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62037,
+              "2": 62038,
+              "3": 62039,
+              "4": 62040,
+              "5": 62041,
+              "6": 62042,
+              "7": 62043,
+              "8": 62044,
+              "9": 62045,
+              "10": 62046
+            }
+          },
+          {
+            "field": "DischargeGas",
+            "key": "hp{n}DischargeGas",
+            "base_address": 62047,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Discharge temperature",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62047,
+              "2": 62048,
+              "3": 62049,
+              "4": 62050,
+              "5": 62051,
+              "6": 62052,
+              "7": 62053,
+              "8": 62054,
+              "9": 62055,
+              "10": 62056
+            }
+          },
+          {
+            "field": "SuctionGas",
+            "key": "hp{n}SuctionGas",
+            "base_address": 62057,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Suction gas temperature",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62057,
+              "2": 62058,
+              "3": 62059,
+              "4": 62060,
+              "5": 62061,
+              "6": 62062,
+              "7": 62063,
+              "8": 62064,
+              "9": 62065,
+              "10": 62066
+            }
+          },
+          {
+            "field": "HighPressure",
+            "key": "hp{n}HighPressure",
+            "base_address": 62067,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): High pressure",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "bar",
+            "words": 1,
+            "addresses": {
+              "1": 62067,
+              "2": 62068,
+              "3": 62069,
+              "4": 62070,
+              "5": 62071,
+              "6": 62072,
+              "7": 62073,
+              "8": 62074,
+              "9": 62075,
+              "10": 62076
+            }
+          },
+          {
+            "field": "LowPressure",
+            "key": "hp{n}LowPressure",
+            "base_address": 62077,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Low Pressure",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "bar",
+            "words": 1,
+            "addresses": {
+              "1": 62077,
+              "2": 62078,
+              "3": 62079,
+              "4": 62080,
+              "5": 62081,
+              "6": 62082,
+              "7": 62083,
+              "8": 62084,
+              "9": 62085,
+              "10": 62086
+            }
+          },
+          {
+            "field": "BrineTempIn",
+            "key": "hp{n}BrineTempIn",
+            "base_address": 62087,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Brine in",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62087,
+              "2": 62088,
+              "3": 62089,
+              "4": 62090,
+              "5": 62091,
+              "6": 62092,
+              "7": 62093,
+              "8": 62094,
+              "9": 62095,
+              "10": 62096
+            }
+          },
+          {
+            "field": "BrineTempOut",
+            "key": "hp{n}BrineTempOut",
+            "base_address": 62097,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Brine out",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62097,
+              "2": 62098,
+              "3": 62099,
+              "4": 62100,
+              "5": 62101,
+              "6": 62102,
+              "7": 62103,
+              "8": 62104,
+              "9": 62105,
+              "10": 62106
+            }
+          },
+          {
+            "field": "ChargePump",
+            "key": "hp{n}ChargePump",
+            "base_address": 62107,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Charge pump",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "%",
+            "words": 1,
+            "addresses": {
+              "1": 62107,
+              "2": 62108,
+              "3": 62109,
+              "4": 62110,
+              "5": 62111,
+              "6": 62112,
+              "7": 62113,
+              "8": 62114,
+              "9": 62115,
+              "10": 62116
+            }
+          },
+          {
+            "field": "BrinePump",
+            "key": "hp{n}BrinePump",
+            "base_address": 62117,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Brine pump",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "%",
+            "words": 1,
+            "addresses": {
+              "1": 62117,
+              "2": 62118,
+              "3": 62119,
+              "4": 62120,
+              "5": 62121,
+              "6": 62122,
+              "7": 62123,
+              "8": 62124,
+              "9": 62125,
+              "10": 62126
+            }
+          },
+          {
+            "field": "Fan",
+            "key": "hp{n}Fan",
+            "base_address": 62127,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Fan",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "%",
+            "words": 1,
+            "addresses": {
+              "1": 62127,
+              "2": 62128,
+              "3": 62129,
+              "4": 62130,
+              "5": 62131,
+              "6": 62132,
+              "7": 62133,
+              "8": 62134,
+              "9": 62135,
+              "10": 62136
+            }
+          },
+          {
+            "field": "DefrostTimer",
+            "key": "hp{n}DefrostTimer",
+            "base_address": 62137,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Defrost timer",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62137,
+              "2": 62138,
+              "3": 62139,
+              "4": 62140,
+              "5": 62141,
+              "6": 62142,
+              "7": 62143,
+              "8": 62144,
+              "9": 62145,
+              "10": 62146
+            }
+          },
+          {
+            "field": "OutsideTemp",
+            "key": "hp{n}OutsideTemp",
+            "base_address": 62147,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Outdoor temp",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62147,
+              "2": 62148,
+              "3": 62149,
+              "4": 62150,
+              "5": 62151,
+              "6": 62152,
+              "7": 62153,
+              "8": 62154,
+              "9": 62155,
+              "10": 62156
+            }
+          },
+          {
+            "field": "SWVersion",
+            "key": "hp{n}SWVersion",
+            "base_address": 62157,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Software version",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62157,
+              "2": 62158,
+              "3": 62159,
+              "4": 62160,
+              "5": 62161,
+              "6": 62162,
+              "7": 62163,
+              "8": 62164,
+              "9": 62165,
+              "10": 62166
+            }
+          },
+          {
+            "field": "CurrRPS",
+            "key": "hp{n}CurrRPS",
+            "base_address": 62193,
+            "stride": 1,
+            "description": "Heat pump 1 (A1): Current RPS",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "rps",
+            "words": 1,
+            "addresses": {
+              "1": 62193,
+              "2": 62194,
+              "3": 62195,
+              "4": 62196,
+              "5": 62197,
+              "6": 62198,
+              "7": 62199,
+              "8": 62200,
+              "9": 62201,
+              "10": 62202
+            }
+          },
+          {
+            "field": "CompressorTime",
+            "key": "hp{n}CompressorTime",
+            "base_address": 62214,
+            "stride": 2,
+            "description": "State: Compressor 1 operating time LSB",
+            "access": "R",
+            "dtype": "U32",
+            "scale": 1.0,
+            "unit": "h",
+            "words": 2,
+            "addresses": {
+              "1": 62214,
+              "2": 62216,
+              "3": 62218,
+              "4": 62220,
+              "5": 62222,
+              "6": 62224,
+              "7": 62226,
+              "8": 62228,
+              "9": 62230,
+              "10": 62232
+            }
+          },
+          {
+            "field": "CompressorTime24H",
+            "key": "hp{n}CompressorTime24H",
+            "base_address": 62234,
+            "stride": 1,
+            "description": "State: Compressor 1 last 24h",
+            "access": "R",
+            "dtype": "U16",
+            "scale": 1.0,
+            "unit": "h",
+            "words": 1,
+            "addresses": {
+              "1": 62234,
+              "2": 62235,
+              "3": 62236,
+              "4": 62237,
+              "5": 62238,
+              "6": 62239,
+              "7": 62240,
+              "8": 62241,
+              "9": 62242,
+              "10": 62243
+            }
+          },
+          {
+            "field": "Type",
+            "key": "hp{n}Type",
+            "base_address": 62254,
+            "stride": 1,
+            "description": "Heat pump 1 (A1) type",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62254,
+              "2": 62255,
+              "3": 62256,
+              "4": 62257,
+              "5": 62258,
+              "6": 62259,
+              "7": 62260,
+              "8": 62261,
+              "9": 62262,
+              "10": 62263
+            }
+          },
+          {
+            "field": "CompressorModel",
+            "key": "hp{n}CompressorModel",
+            "base_address": 62264,
+            "stride": 1,
+            "description": "Heat pump 1 (A1) compressor model",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62264,
+              "2": 62265,
+              "3": 62266,
+              "4": 62267,
+              "5": 62268,
+              "6": 62269,
+              "7": 62270,
+              "8": 62271,
+              "9": 62272,
+              "10": 62273
+            }
+          },
+          {
+            "field": "PrimarySystemFlow",
+            "key": "hp{n}PrimarySystemFlow",
+            "base_address": 62291,
+            "stride": 1,
+            "description": "Heat pump 1 (A1) Primary system flow",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62291,
+              "2": 62292,
+              "3": 62293,
+              "4": 62294,
+              "5": 62295,
+              "6": 62296,
+              "7": 62297,
+              "8": 62298,
+              "9": 62299,
+              "10": 62300
+            }
+          },
+          {
+            "field": "PowerConsumption",
+            "key": "hp{n}PowerConsumption",
+            "base_address": 62331,
+            "stride": 1,
+            "description": "HP1 Power consumption kW",
+            "access": "R",
+            "dtype": "U16",
+            "scale": 0.1,
+            "unit": "kW",
+            "words": 1,
+            "addresses": {
+              "1": 62331,
+              "2": 62332,
+              "3": 62333,
+              "4": 62334,
+              "5": 62335,
+              "6": 62336,
+              "7": 62337,
+              "8": 62338,
+              "9": 62339,
+              "10": 62340
+            }
+          },
+          {
+            "field": "Energy",
+            "key": "hp{n}Energy",
+            "base_address": 62341,
+            "stride": 2,
+            "description": "Compressor 1 Power consumption kWh LSB",
+            "access": "R",
+            "dtype": "U32",
+            "scale": 1.0,
+            "unit": "kWh",
+            "words": 2,
+            "addresses": {
+              "1": 62341,
+              "2": 62343,
+              "3": 62345,
+              "4": 62347,
+              "5": 62349,
+              "6": 62351,
+              "7": 62353,
+              "8": 62355,
+              "9": 62357,
+              "10": 62359
+            }
+          }
+        ]
+      },
+      "zone": {
+        "label": "Heating system (zone)",
+        "instance_label": "Zone{n}",
+        "max_instances": 4,
+        "limited_by": "max_zones",
+        "addressing": "base_address + (n-1) * stride",
+        "fields": [
+          {
+            "field": "SetPoint",
+            "key": "hs{n}SetPoint",
+            "base_address": 61509,
+            "stride": 1,
+            "description": "Heating system 1: setting room temp",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 61509,
+              "2": 61510,
+              "3": 61511,
+              "4": 61512
+            }
+          },
+          {
+            "field": "Inclination",
+            "key": "hs{n}Inclination",
+            "base_address": 61513,
+            "stride": 1,
+            "description": "Heating system 1: Change inclination",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61513,
+              "2": 61514,
+              "3": 61515,
+              "4": 61516
+            }
+          },
+          {
+            "field": "Adjustment",
+            "key": "hs{n}Adjustment",
+            "base_address": 61517,
+            "stride": 1,
+            "description": "Room1: Adjustment",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61517,
+              "2": 61518,
+              "3": 61519,
+              "4": 61520
+            }
+          },
+          {
+            "field": "PrimaryFlowMax",
+            "key": "hs{n}PrimaryFlowMax",
+            "base_address": 61534,
+            "stride": 1,
+            "description": "Heating system 1: Max Primary flow ° C",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61534,
+              "2": 61535,
+              "3": 61536,
+              "4": 61537
+            }
+          },
+          {
+            "field": "PrimaryFlowMin",
+            "key": "hs{n}PrimaryFlowMin",
+            "base_address": 61538,
+            "stride": 1,
+            "description": "Heating system 1: Min primary flow ° C 140=Off",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61538,
+              "2": 61539,
+              "3": 61540,
+              "4": 61541
+            }
+          },
+          {
+            "field": "Mode",
+            "key": "hs{n}Mode",
+            "base_address": 61542,
+            "stride": 1,
+            "description": "Heating system 1: Heating mode 0=Auto, 1=On, 2=Off",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61542,
+              "2": 61543,
+              "3": 61544,
+              "4": 61545
+            }
+          },
+          {
+            "field": "HeatingOffTemp",
+            "key": "hs{n}HeatingOffTemp",
+            "base_address": 61546,
+            "stride": 1,
+            "description": "Heating system 1: Heating off, out ° C",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 61546,
+              "2": 61547,
+              "3": 61548,
+              "4": 61549
+            }
+          },
+          {
+            "field": "HeatingOffTime",
+            "key": "hs{n}HeatingOffTime",
+            "base_address": 61550,
+            "stride": 1,
+            "description": "Heating system 1: Heating off time",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "h",
+            "words": 1,
+            "addresses": {
+              "1": 61550,
+              "2": 61551,
+              "3": 61552,
+              "4": 61553
+            }
+          },
+          {
+            "field": "ReduceTempNight",
+            "key": "hs{n}ReduceTempNight",
+            "base_address": 61554,
+            "stride": 1,
+            "description": "Heating system 1: Room temp night reduction",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 61554,
+              "2": 61555,
+              "3": 61556,
+              "4": 61557
+            }
+          },
+          {
+            "field": "PrimaryFlowReduceNight",
+            "key": "hs{n}PrimaryFlowReduceNight",
+            "base_address": 61558,
+            "stride": 1,
+            "description": "Heating system 1: Primary flow Night reduction",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61558,
+              "2": 61559,
+              "3": 61560,
+              "4": 61561
+            }
+          },
+          {
+            "field": "NightReduceOffTemp",
+            "key": "hs{n}NightReduceOffTemp",
+            "base_address": 61562,
+            "stride": 1,
+            "description": "Heating system 1: Outdoor temp night reduction",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 61562,
+              "2": 61563,
+              "3": 61564,
+              "4": 61565
+            }
+          },
+          {
+            "field": "AlarmLowRoomTemp",
+            "key": "hs{n}AlarmLowRoomTemp",
+            "base_address": 61566,
+            "stride": 1,
+            "description": "Heating system 1: Alarm low room temperature",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 61566,
+              "2": 61567,
+              "3": 61568,
+              "4": 61569
+            }
+          },
+          {
+            "field": "ReduceTempVac",
+            "key": "hs{n}ReduceTempVac",
+            "base_address": 61602,
+            "stride": 1,
+            "description": "Heating system 1: Holiday reduction",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 61602,
+              "2": 61603,
+              "3": 61604,
+              "4": 61605
+            }
+          },
+          {
+            "field": "PrimaryFlowReduceVac",
+            "key": "hs{n}PrimaryFlowReduceVac",
+            "base_address": 61606,
+            "stride": 1,
+            "description": "Heating system 1: Primary flow Holiday reduction",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 61606,
+              "2": 61607,
+              "3": 61608,
+              "4": 61609
+            }
+          },
+          {
+            "field": "HeatingOnTime",
+            "key": "hs{n}HeatingOnTime",
+            "base_address": 61725,
+            "stride": 1,
+            "description": "Heating system 1: Heating on time",
+            "access": "RW",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "h",
+            "words": 1,
+            "addresses": {
+              "1": 61725,
+              "2": 61726,
+              "3": 61727,
+              "4": 61728
+            }
+          },
+          {
+            "field": "Temp",
+            "key": "hs{n}Temp",
+            "base_address": 62007,
+            "stride": 1,
+            "description": "Heating system 1: Temperature setpoint primary flow",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62007,
+              "2": 62008,
+              "3": 62009,
+              "4": 62010
+            }
+          },
+          {
+            "field": "PrimaryFlow",
+            "key": "hs{n}PrimaryFlow",
+            "base_address": 62011,
+            "stride": 1,
+            "description": "Heating system 1: Primary flow temperature",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62011,
+              "2": 62012,
+              "3": 62013,
+              "4": 62014
+            }
+          },
+          {
+            "field": "TempCurr",
+            "key": "hs{n}TempCurr",
+            "base_address": 62203,
+            "stride": 1,
+            "description": "Current room temp 1",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 0.1,
+            "unit": "°C",
+            "words": 1,
+            "addresses": {
+              "1": 62203,
+              "2": 62204,
+              "3": 62205,
+              "4": 62206
+            }
+          },
+          {
+            "field": "Status",
+            "key": "hs{n}Status",
+            "base_address": 62246,
+            "stride": 1,
+            "description": "Heating system 1 status 0 = Heating off, 1 = Vacation, 2= Night reduct",
+            "access": "R",
+            "dtype": "S16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62246,
+              "2": 62247,
+              "3": 62248,
+              "4": 62249
+            }
+          },
+          {
+            "field": "ShuntState",
+            "key": "hs{n}ShuntState",
+            "base_address": 62308,
+            "stride": 1,
+            "description": "Heating system 1: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+            "access": "R",
+            "dtype": "U16",
+            "scale": 1.0,
+            "unit": "",
+            "words": 1,
+            "addresses": {
+              "1": 62308,
+              "2": 62309,
+              "3": 62310,
+              "4": 62311
+            }
+          }
+        ]
+      }
+    }
+  }
+}

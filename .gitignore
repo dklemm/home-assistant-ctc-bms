@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# local HA dev instance (ln -s custom_components into it; see README)
+config/

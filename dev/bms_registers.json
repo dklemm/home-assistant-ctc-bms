@@ -1,0 +1,4434 @@
+{
+ "61500": {
+  "name": "sDHWMode",
+  "description": "Hot water mode 0=Ecomony, 1=Normal, 2=Comfort",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61501": {
+  "name": "sDHWManStopTemp",
+  "description": "Manual Stop temperature hot water",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61502": {
+  "name": "sDHWTempOut",
+  "description": "Setting outlet temperature hot water",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61503": {
+  "name": "sDHWTimerExtra",
+  "description": "Extra hot water timer",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.5,
+  "words": 1
+ },
+ "61504": {
+  "name": "HeatMaxTime",
+  "description": "Maximum time heating Heat pump",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61505": {
+  "name": "sDHWMaxTime",
+  "description": "Maximum time hot water",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61506": {
+  "name": "sDHWMinRPS",
+  "description": "Minimum RPS hot water",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61507": {
+  "name": "sPoolMinRPS",
+  "description": "Minimum RPS Pool",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61508": {
+  "name": "sVacationDaysTimer",
+  "description": "Number of vacation days timer",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61509": {
+  "name": "hs1SetPoint",
+  "description": "Heating system 1: setting room temp",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61510": {
+  "name": "hs2SetPoint",
+  "description": "Heating system 2: setting room temp",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61511": {
+  "name": "hs3SetPoint",
+  "description": "Heating system 3: setting room temp",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61512": {
+  "name": "hs4SetPoint",
+  "description": "Heating system 4: setting room temp",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61513": {
+  "name": "hs1Inclination",
+  "description": "Heating system 1: Change inclination",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61514": {
+  "name": "hs2Inclination",
+  "description": "Heating system 2: Change inclination",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61515": {
+  "name": "hs3Inclination",
+  "description": "Heating system 3: Change inclination",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61516": {
+  "name": "hs4Inclination",
+  "description": "Heating system 4: Change inclination",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61517": {
+  "name": "hs1Adjustment",
+  "description": "Room1: Adjustment",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61518": {
+  "name": "hs2Adjustment",
+  "description": "Room2: Adjustment",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61519": {
+  "name": "hs3Adjustment",
+  "description": "Room3: Adjustment",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61520": {
+  "name": "hs4Adjustment",
+  "description": "Room4: Adjustment",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61521": {
+  "name": "hp1Blocked",
+  "description": "Heat pump 1 (A1): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61522": {
+  "name": "hp2Blocked",
+  "description": "Heat pump 2 (A2): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61523": {
+  "name": "hp3Blocked",
+  "description": "Heat pump 3 (A3): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61524": {
+  "name": "hp4Blocked",
+  "description": "Heat pump 4 (A4): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61525": {
+  "name": "hp5Blocked",
+  "description": "Heat pump 5 (A5): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61526": {
+  "name": "hp6Blocked",
+  "description": "Heat pump 6 (A6): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61527": {
+  "name": "hp7Blocked",
+  "description": "Heat pump 7 (A7): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61528": {
+  "name": "hp8Blocked",
+  "description": "Heat pump 8 (A8): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61529": {
+  "name": "hp9Blocked",
+  "description": "Heat pump 9 (A9): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61530": {
+  "name": "hp10Blocked",
+  "description": "Heat pump 10 (A10): Blocked 0=Blocked, 1=Allowed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61531": {
+  "name": "poolTempStopSetting",
+  "description": "Pool: Stop Temp setting",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61532": {
+  "name": "poolMaxTime",
+  "description": "Pool: Maximum time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61533": {
+  "name": "poolDiffStart",
+  "description": "Pool: Start difference",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61534": {
+  "name": "hs1PrimaryFlowMax",
+  "description": "Heating system 1: Max Primary flow ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61535": {
+  "name": "hs2PrimaryFlowMax",
+  "description": "Heating system 2: Max Primary flow ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61536": {
+  "name": "hs3PrimaryFlowMax",
+  "description": "Heating system 3: Max Primary flow ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61537": {
+  "name": "hs4PrimaryFlowMax",
+  "description": "Heating system 4: Max Primary flow ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61538": {
+  "name": "hs1PrimaryFlowMin",
+  "description": "Heating system 1: Min primary flow ° C 140=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61539": {
+  "name": "hs2PrimaryFlowMin",
+  "description": "Heating system 2: Min primary flow ° C 140=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61540": {
+  "name": "hs3PrimaryFlowMin",
+  "description": "Heating system 3: Min primary flow ° C 140=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61541": {
+  "name": "hs4PrimaryFlowMin",
+  "description": "Heating system 4: Min primary flow ° C 140=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61542": {
+  "name": "hs1Mode",
+  "description": "Heating system 1: Heating mode 0=Auto, 1=On, 2=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61543": {
+  "name": "hs2Mode",
+  "description": "Heating system 2: Heating mode 0=Auto, 1=On, 2=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61544": {
+  "name": "hs3Mode",
+  "description": "Heating system 3: Heating mode 0=Auto, 1=On, 2=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61545": {
+  "name": "hs4Mode",
+  "description": "Heating system 4: Heating mode 0=Auto, 1=On, 2=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61546": {
+  "name": "hs1HeatingOffTemp",
+  "description": "Heating system 1: Heating off, out ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61547": {
+  "name": "hs2HeatingOffTemp",
+  "description": "Heating system 2: Heating off, out ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61548": {
+  "name": "hs3HeatingOffTemp",
+  "description": "Heating system 3: Heating off, out ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61549": {
+  "name": "hs4HeatingOffTemp",
+  "description": "Heating system 4: Heating off, out ° C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61550": {
+  "name": "hs1HeatingOffTime",
+  "description": "Heating system 1: Heating off time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61551": {
+  "name": "hs2HeatingOffTime",
+  "description": "Heating system 2: Heating off time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61552": {
+  "name": "hs3HeatingOffTime",
+  "description": "Heating system 3: Heating off time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61553": {
+  "name": "hs4HeatingOffTime",
+  "description": "Heating system 4: Heating off time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61554": {
+  "name": "hs1ReduceTempNight",
+  "description": "Heating system 1: Room temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61555": {
+  "name": "hs2ReduceTempNight",
+  "description": "Heating system 2: Room temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61556": {
+  "name": "hs3ReduceTempNight",
+  "description": "Heating system 3: Room temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61557": {
+  "name": "hs4ReduceTempNight",
+  "description": "Heating system 4: Room temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61558": {
+  "name": "hs1PrimaryFlowReduceNight",
+  "description": "Heating system 1: Primary flow Night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61559": {
+  "name": "hs2PrimaryFlowReduceNight",
+  "description": "Heating system 2: Primary flow Night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61560": {
+  "name": "hs3PrimaryFlowReduceNight",
+  "description": "Heating system 3: Primary flow Night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61561": {
+  "name": "hs4PrimaryFlowReduceNight",
+  "description": "Heating system 4: Primary flow Night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61562": {
+  "name": "hs1NightReduceOffTemp",
+  "description": "Heating system 1: Outdoor temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61563": {
+  "name": "hs2NightReduceOffTemp",
+  "description": "Heating system 2: Outdoor temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61564": {
+  "name": "hs3NightReduceOffTemp",
+  "description": "Heating system 3: Outdoor temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61565": {
+  "name": "hs4NightReduceOffTemp",
+  "description": "Heating system 4: Outdoor temp night reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61566": {
+  "name": "hs1AlarmLowRoomTemp",
+  "description": "Heating system 1: Alarm low room temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61567": {
+  "name": "hs2AlarmLowRoomTemp",
+  "description": "Heating system 2: Alarm low room temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61568": {
+  "name": "hs3AlarmLowRoomTemp",
+  "description": "Heating system 3: Alarm low room temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61569": {
+  "name": "hs4AlarmLowRoomTemp",
+  "description": "Heating system 4: Alarm low room temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61570": {
+  "name": "hsChargePumpSetting",
+  "description": "Radiator pump setting %",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61571": {
+  "name": "hpDMStart",
+  "description": "Start at degree minute",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61572": {
+  "name": "hp1RPSMax",
+  "description": "Heat pump 1 (A1): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61573": {
+  "name": "hp2RPSMax",
+  "description": "Heat pump 2 (A2): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61574": {
+  "name": "hp3RPSMax",
+  "description": "Heat pump 3 (A3): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61575": {
+  "name": "hp4RPSMax",
+  "description": "Heat pump 4 (A4): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61576": {
+  "name": "hp5RPSMax",
+  "description": "Heat pump 5 (A5): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61577": {
+  "name": "hp6RPSMax",
+  "description": "Heat pump 6 (A6): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61578": {
+  "name": "hp7RPSMax",
+  "description": "Heat pump 7 (A7): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61579": {
+  "name": "hp8RPSMax",
+  "description": "Heat pump 8 (A8): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61580": {
+  "name": "hp9RPSMax",
+  "description": "Heat pump 9 (A9): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61581": {
+  "name": "hp10RPSMax",
+  "description": "Heat pump 10 (A10): Max RPS",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61582": {
+  "name": "exb1DMStart",
+  "description": "E1: Start add heat, degree minute",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61583": {
+  "name": "exb1Diff",
+  "description": "External boiler diff",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61584": {
+  "name": "exbBlockOutTemp",
+  "description": "Blocking additional heat outdoor temp ºC",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61585": {
+  "name": "exbBoilerShuntTemp",
+  "description": "Boiler , open mixing valve ºC",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61586": {
+  "name": "exbBoilerDelayStop",
+  "description": "Delay stop external boiler",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61587": {
+  "name": "exbMode",
+  "description": "Ext boiler mode 0=Auto, 1=On, 2=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61588": {
+  "name": "ehsStartDegrees",
+  "description": "EHS: open shunt degrees",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61589": {
+  "name": "ehsDiffStartStop",
+  "description": "EHS: start / stop diff",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61590": {
+  "name": "elhMaxPower",
+  "description": "Max immersion heater kW / Lower",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61591": {
+  "name": "elhDHWMaxPower",
+  "description": "Max immersion heater DHW kW / Upper",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61602": {
+  "name": "hs1ReduceTempVac",
+  "description": "Heating system 1: Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61603": {
+  "name": "hs2ReduceTempVac",
+  "description": "Heating system 2: Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61604": {
+  "name": "hs3ReduceTempVac",
+  "description": "Heating system 3: Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61605": {
+  "name": "hs4ReduceTempVac",
+  "description": "Heating system 4: Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61606": {
+  "name": "hs1PrimaryFlowReduceVac",
+  "description": "Heating system 1: Primary flow Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61607": {
+  "name": "hs2PrimaryFlowReduceVac",
+  "description": "Heating system 2: Primary flow Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61608": {
+  "name": "hs3PrimaryFlowReduceVac",
+  "description": "Heating system 3: Primary flow Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61609": {
+  "name": "hs4PrimaryFlowReduceVac",
+  "description": "Heating system 4: Primary flow Holiday reduction",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61610": {
+  "name": "hpXDMDiff",
+  "description": "Heat pump : Diff Heat pump , degree minute",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61611": {
+  "name": "hpXDMDelay",
+  "description": "Heat pump : Delay between Heat pump",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61612": {
+  "name": "ex1DMDiff",
+  "description": "E1: Diff add heat, degree minute",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61613": {
+  "name": "ex2DMStart",
+  "description": "E2: Start 0-10V degree minute",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61614": {
+  "name": "ex2DMDiff",
+  "description": "E2: Diff 0-10V, degree minute",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61615": {
+  "name": "ex3DMStart",
+  "description": "E3: Start EcoMiniEl, degree minute",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61616": {
+  "name": "ex3StepsHeat",
+  "description": "E3: Number of steps heating",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61617": {
+  "name": "ex3StepsDHW",
+  "description": "E3: Number of steps DHW",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61618": {
+  "name": "ex3EMEDiffSteps",
+  "description": "E3: Diff step EcoMiniEl",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61619": {
+  "name": "ex1Delay",
+  "description": "E1: Delay add heat E1",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61620": {
+  "name": "ex2Delay",
+  "description": "E2: Delay add heat 0-10V",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61621": {
+  "name": "ex2DiffDelay",
+  "description": "E2: Diff 0-10V delay",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61622": {
+  "name": "ex3EMEDelay",
+  "description": "E3: Delay EcoMiniEl",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61623": {
+  "name": "ex3EMEDelaySteps",
+  "description": "E3: Delay EcoMiniEl step",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61624": {
+  "name": "coolPrimaryOut20",
+  "description": "Cooling: Primary flow at the outdoor temperature +20 ºC",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61625": {
+  "name": "coolPrimaryOut40",
+  "description": "Cooling: Primary flow at the outdoor temperature +40 ºC",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61626": {
+  "name": "coolPrimaryMin",
+  "description": "Cooling: Min flow temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61629": {
+  "name": "sMixValveDelaySet",
+  "description": "Delay mixing valve setting 241=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61630": {
+  "name": "woodFlueGasTempStart",
+  "description": "Wood boiler start flue gas 490=Off",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61631": {
+  "name": "woodBoilerTempStart",
+  "description": "Wood boiler start boiler temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61632": {
+  "name": "woodHysteresis",
+  "description": "Wood boiler hysteresis",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61633": {
+  "name": "elhLowerSetp",
+  "description": "Boiler lower °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61634": {
+  "name": "elhUpperSetp",
+  "description": "Boiler upper °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61635": {
+  "name": "elhAddHeatSetp",
+  "description": "Boiler add heat °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61636": {
+  "name": "elhDHWAddHeatSetp",
+  "description": "Boiler DHW °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61637": {
+  "name": "dthDiffTempStart",
+  "description": "Diff thermostat start temp diff",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61638": {
+  "name": "dthDiffTempStop",
+  "description": "Diff thermostat stop temp diff",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61639": {
+  "name": "dthChargeTemp",
+  "description": "Diff thermostat charge temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61640": {
+  "name": "sunDiffTempStart",
+  "description": "EcoLogic / EcoZenith i550: Solar deltaT max Other: Solar start charge difference",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61641": {
+  "name": "sunDiffTempStop",
+  "description": "EcoLogic / EcoZenith i550: Solar deltaT min Other: Solar stop charge difference",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61642": {
+  "name": "sunChargePumpMin",
+  "description": "Solar charge pump min",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61643": {
+  "name": "sunDiffDrillTempStart",
+  "description": "EcoLogic / EcoZenith i550: Solar deltaT max borehole Other: Solar borehole charge start diff",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61644": {
+  "name": "sunDiffDrillTempStop",
+  "description": "EcoLogic / EcoZenith i550: Solar deltaT min borehole Other: Solar borehole charge stop difference",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61645": {
+  "name": "sunMainTankChargeTemp",
+  "description": "EcoHeat 400 / EcoZenith i250: Solar H-tank charge temp GSi/EcoZenith i350: Solar EHS-tank harge temp",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61646": {
+  "name": "sunExtraTankChargeTemp",
+  "description": "Solar: X-tank charge temp",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61647": {
+  "name": "sunEcoTankChargeTemp",
+  "description": "Solar: Eco-tank charge temp",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61648": {
+  "name": "sunMainTankDiffTempStart",
+  "description": "EcoHeat 400 / EcoZenith i250: Solar charge H-tank start difference GSi/ EcoZenith i350: Solar EHS-tank charge start difference",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61649": {
+  "name": "sunMainTankDiffTempStop",
+  "description": "EcoHeat 400 / EcoZenith i250: Solar H-tank charge stop difference GSi/ EcoZenith i350: Solar EHS-tank charge stop difference",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61650": {
+  "name": "sunMainTankTempStop",
+  "description": "EcoHeat 400 / EcoZenith i250: Solar H-tank charge stop temperature GSi/EcoZenith i350: Solar EHS-tank charge stop temperature",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61651": {
+  "name": "woodTankReturnDelay",
+  "description": "Wood boiler buffer tank delay recharge time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61652": {
+  "name": "sElHeaterTankUpperSetp",
+  "description": "Setpoint for upper tank when el. heater is used",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61653": {
+  "name": "sDHWCapacityStart",
+  "description": "Capacity start point for charging DHW",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61654": {
+  "name": "sDHWLowerStartTemp",
+  "description": "Lower temp sensor start point for charging DHW",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61655": {
+  "name": "sVentilationMode",
+  "description": "Ventilation mode",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61656": {
+  "name": "sVentNightcoolValue",
+  "description": "Turn night cooling on or off",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61657": {
+  "name": "sVentAwayMode",
+  "description": "Ventilation away mode",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61658": {
+  "name": "x",
+  "description": "Pool Enable",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61659": {
+  "name": "x",
+  "description": "Room temp cooling",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61660": {
+  "name": "x",
+  "description": "Cooling permitted from outdoor temp °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61661": {
+  "name": "x",
+  "description": "Cooling delay active (minutes)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61662": {
+  "name": "x",
+  "description": "Delay cooling from heating off (minutes)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61663": {
+  "name": "x",
+  "description": "Cooling start delay (minutes)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61664": {
+  "name": "x",
+  "description": "Cooling diff calc delay (minutes)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61665": {
+  "name": "x",
+  "description": "Primary flow temp at outdoor +20 °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61666": {
+  "name": "x",
+  "description": "Primary flow temp at outdoor +40 °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61667": {
+  "name": "x",
+  "description": "Primary flow diff at outdoor +20 °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61668": {
+  "name": "x",
+  "description": "Primary flow diff at outdoor +40 °C",
+  "signed": true,
+  "access": "RW",
+  "factor": 0.1,
+  "words": 1
+ },
+ "61669": {
+  "name": "x",
+  "description": "Cooling max time HP active (minutes)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61670": {
+  "name": "x",
+  "description": "Cooling HP Charge pump speed",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61671": {
+  "name": "x",
+  "description": "Heating program HC1 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61672": {
+  "name": "x",
+  "description": "Heating program HC2 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61673": {
+  "name": "x",
+  "description": "Heating program HC3 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61674": {
+  "name": "x",
+  "description": "Heating program HC4 0 = Economy, 1 = Normal, 2 = Comfort, 3 = Custom",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61675": {
+  "name": "x",
+  "description": "HC1 Heating curve point 1 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61676": {
+  "name": "x",
+  "description": "HC1 Heating curve point 1 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61677": {
+  "name": "x",
+  "description": "HC1 Heating curve point 2 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61678": {
+  "name": "x",
+  "description": "HC1 Heating curve point 2 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61679": {
+  "name": "x",
+  "description": "HC1 Heating curve point 3 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61680": {
+  "name": "x",
+  "description": "HC1 Heating curve point 3 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61681": {
+  "name": "x",
+  "description": "HC1 Heating curve point 4 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61682": {
+  "name": "x",
+  "description": "HC1 Heating curve point 4 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61683": {
+  "name": "x",
+  "description": "HC1 Heating curve point 5 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61684": {
+  "name": "x",
+  "description": "HC1 Heating curve point 5 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61685": {
+  "name": "x",
+  "description": "HC2 Heating curve point 1 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61686": {
+  "name": "x",
+  "description": "HC2 Heating curve point 1 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61687": {
+  "name": "x",
+  "description": "HC2 Heating curve point 2 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61688": {
+  "name": "x",
+  "description": "HC2 Heating curve point 2 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61689": {
+  "name": "x",
+  "description": "HC2 Heating curve point 3 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61690": {
+  "name": "x",
+  "description": "HC2 Heating curve point 3 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61691": {
+  "name": "x",
+  "description": "HC2 Heating curve point 4 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61692": {
+  "name": "x",
+  "description": "HC2 Heating curve point 4 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61693": {
+  "name": "x",
+  "description": "HC2 Heating curve point 5 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61694": {
+  "name": "x",
+  "description": "HC2 Heating curve point 5 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61695": {
+  "name": "x",
+  "description": "HC3 Heating curve point 1 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61696": {
+  "name": "x",
+  "description": "HC3 Heating curve point 1 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61697": {
+  "name": "x",
+  "description": "HC3 Heating curve point 2 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61698": {
+  "name": "x",
+  "description": "HC3 Heating curve point 2 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61699": {
+  "name": "x",
+  "description": "HC3 Heating curve point 3 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61700": {
+  "name": "x",
+  "description": "HC3 Heating curve point 3 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61701": {
+  "name": "x",
+  "description": "HC3 Heating curve point 4 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61702": {
+  "name": "x",
+  "description": "HC3 Heating curve point 4 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61703": {
+  "name": "x",
+  "description": "HC3 Heating curve point 5 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61704": {
+  "name": "x",
+  "description": "HC3 Heating curve point 5 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61705": {
+  "name": "x",
+  "description": "HC4 Heating curve point 1 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61706": {
+  "name": "x",
+  "description": "HC4 Heating curve point 1 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61707": {
+  "name": "x",
+  "description": "HC4 Heating curve point 2 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61708": {
+  "name": "x",
+  "description": "HC4 Heating curve point 2 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61709": {
+  "name": "x",
+  "description": "HC4 Heating curve point 3 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61710": {
+  "name": "x",
+  "description": "HC4 Heating curve point 3 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61711": {
+  "name": "x",
+  "description": "HC4 Heating curve point 4 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61712": {
+  "name": "x",
+  "description": "HC4 Heating curve point 4 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61713": {
+  "name": "x",
+  "description": "HC4 Heating curve point 5 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61714": {
+  "name": "x",
+  "description": "HC4 Heating curve point 5 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61715": {
+  "name": "x",
+  "description": "Cooling curve point 1 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61716": {
+  "name": "x",
+  "description": "Cooling curve point 1 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61717": {
+  "name": "x",
+  "description": "Cooling curve point 2 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61718": {
+  "name": "x",
+  "description": "Cooling curve point 2 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61719": {
+  "name": "x",
+  "description": "Cooling curve point 3 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61720": {
+  "name": "x",
+  "description": "Cooling curve point 3 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61721": {
+  "name": "x",
+  "description": "Cooling curve point 4 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61722": {
+  "name": "x",
+  "description": "Cooling curve point 4 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61723": {
+  "name": "x",
+  "description": "Cooling curve point 5 x-value (outside temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61724": {
+  "name": "x",
+  "description": "Cooling curve point 5 y-value (setp temp)",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61725": {
+  "name": "x",
+  "description": "Heating system 1: Heating on time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61726": {
+  "name": "x",
+  "description": "Heating system 2: Heating on time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61727": {
+  "name": "x",
+  "description": "Heating system 3: Heating on time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "61728": {
+  "name": "x",
+  "description": "Heating system 4: Heating on time",
+  "signed": true,
+  "access": "RW",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62000": {
+  "name": "sOutsideTemp",
+  "description": "Outdoor temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62001": {
+  "name": "sStopTempDHW",
+  "description": "Stop temperature DHW",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62002": {
+  "name": "sSetPDHW",
+  "description": "Setpoint outlet temperature DHW",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62003": {
+  "name": "sDHWTemp",
+  "description": "Hot water temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62004": {
+  "name": "sMixValveDelay",
+  "description": "Delay mixing valve",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62005": {
+  "name": "sStatus",
+  "description": "Status 0: HP upper , 1: HP lower , 2: Add 3: HP + Add, 4: HC, 5: DHW 6: Pool, 7: Off, 8: Heating mix 9: Wood, 10: DHW/HC, 11: Cooling, 12: Swap",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62006": {
+  "name": "sRadiatorTemp",
+  "description": "Radiator Water",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62007": {
+  "name": "hs1Temp",
+  "description": "Heating system 1: Temperature setpoint primary flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62008": {
+  "name": "hs2Temp",
+  "description": "Heating system 2: Temperature setpoint primary flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62009": {
+  "name": "hs3Temp",
+  "description": "Heating system 3: Temperature setpoint primary flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62010": {
+  "name": "hs4Temp",
+  "description": "Heating system 4: Temperature setpoint primary flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62011": {
+  "name": "hs1PrimaryFlow",
+  "description": "Heating system 1: Primary flow temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62012": {
+  "name": "hs2PrimaryFlow",
+  "description": "Heating system 2: Primary flow temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62013": {
+  "name": "hs3PrimaryFlow",
+  "description": "Heating system 3: Primary flow temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62014": {
+  "name": "hs4PrimaryFlow",
+  "description": "Heating system 4: Primary flow temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62015": {
+  "name": "sReturnTemp",
+  "description": "Return temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62016": {
+  "name": "sDHWPump",
+  "description": "DHW circulation",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62017": {
+  "name": "hp1Status",
+  "description": "Heat pump 1 (A1): Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62018": {
+  "name": "hp2Status",
+  "description": "Heat pump 2 (A2) status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62019": {
+  "name": "hp3Status",
+  "description": "Heat pump 3 (A3) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62020": {
+  "name": "hp4Status",
+  "description": "Heat pump 4 (A4) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62021": {
+  "name": "hp5Status",
+  "description": "Heat pump 5 (A5) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62022": {
+  "name": "hp6Status",
+  "description": "Heat pump 6 (A6) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62023": {
+  "name": "hp7Status",
+  "description": "Heat pump 7 (A7) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62024": {
+  "name": "hp8Status",
+  "description": "Heat pump 8 (A8) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62025": {
+  "name": "hp9Status",
+  "description": "Heat pump 9 (A9) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62026": {
+  "name": "hp10Status",
+  "description": "Heat pump 10 (A10): Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, ",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62027": {
+  "name": "hp1TempIn",
+  "description": "Heat pump 1 (A1) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62028": {
+  "name": "hp2TempIn",
+  "description": "Heat pump 2 (A2) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62029": {
+  "name": "hp3TempIn",
+  "description": "Heat pump 3 (A3) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62030": {
+  "name": "hp4TempIn",
+  "description": "Heat pump 4 (A4) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62031": {
+  "name": "hp5TempIn",
+  "description": "Heat pump 5 (A5) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62032": {
+  "name": "hp6TempIn",
+  "description": "Heat pump 6 (A6) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62033": {
+  "name": "hp7TempIn",
+  "description": "Heat pump 7 (A7) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62034": {
+  "name": "hp8TempIn",
+  "description": "Heat pump 8 (A8) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62035": {
+  "name": "hp9TempIn",
+  "description": "Heat pump 9 (A9) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62036": {
+  "name": "hp10TempIn",
+  "description": "Heat pump 10 (A10) HP in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62037": {
+  "name": "hp1TempOut",
+  "description": "Heat pump 1 (A1) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62038": {
+  "name": "hp2TempOut",
+  "description": "Heat pump 2 (A2) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62039": {
+  "name": "hp3TempOut",
+  "description": "Heat pump 3 (A3) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62040": {
+  "name": "hp4TempOut",
+  "description": "Heat pump 4 (A4) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62041": {
+  "name": "hp5TempOut",
+  "description": "Heat pump 5 (A5) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62042": {
+  "name": "hp6TempOut",
+  "description": "Heat pump 6 (A6) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62043": {
+  "name": "hp7TempOut",
+  "description": "Heat pump 7 (A7) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62044": {
+  "name": "hp8TempOut",
+  "description": "Heat pump 8 (A8) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62045": {
+  "name": "hp9TempOut",
+  "description": "Heat pump 9 (A9) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62046": {
+  "name": "hp10TempOut",
+  "description": "Heat pump 10 (A10) HP out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62047": {
+  "name": "hp1DischargeGas",
+  "description": "Heat pump 1 (A1): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62048": {
+  "name": "hp2DischargeGas",
+  "description": "Heat pump 2 (A2) Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62049": {
+  "name": "hp3DischargeGas",
+  "description": "Heat pump 3 (A3): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62050": {
+  "name": "hp4DischargeGas",
+  "description": "Heat pump 4 (A4): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62051": {
+  "name": "hp5DischargeGas",
+  "description": "Heat pump 5 (A5): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62052": {
+  "name": "hp6DischargeGas",
+  "description": "Heat pump 6 (A6): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62053": {
+  "name": "hp7DischargeGas",
+  "description": "Heat pump 7 (A7): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62054": {
+  "name": "hp8DischargeGas",
+  "description": "Heat pump 8 (A8): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62055": {
+  "name": "hp9DischargeGas",
+  "description": "Heat pump 9 (A9): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62056": {
+  "name": "hp10DischargeGas",
+  "description": "Heat pump 10 (A10): Discharge temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62057": {
+  "name": "hp1SuctionGas",
+  "description": "Heat pump 1 (A1): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62058": {
+  "name": "hp2SuctionGas",
+  "description": "Heat pump 2 (A2) Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62059": {
+  "name": "hp3SuctionGas",
+  "description": "Heat pump 3 (A3): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62060": {
+  "name": "hp4SuctionGas",
+  "description": "Heat pump 4 (A4): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62061": {
+  "name": "hp5SuctionGas",
+  "description": "Heat pump 5 (A5): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62062": {
+  "name": "hp6SuctionGas",
+  "description": "Heat pump 6 (A6): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62063": {
+  "name": "hp7SuctionGas",
+  "description": "Heat pump 7 (A7): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62064": {
+  "name": "hp8SuctionGas",
+  "description": "Heat pump 8 (A8): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62065": {
+  "name": "hp9SuctionGas",
+  "description": "Heat pump 9 (A9): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62066": {
+  "name": "hp10SuctionGas",
+  "description": "Heat pump 10 (A10): Suction gas temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62067": {
+  "name": "hp1HighPressure",
+  "description": "Heat pump 1 (A1): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62068": {
+  "name": "hp2HighPressure",
+  "description": "Heat pump 2 (A2): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62069": {
+  "name": "hp3HighPressure",
+  "description": "Heat pump 3 (A3): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62070": {
+  "name": "hp4HighPressure",
+  "description": "Heat pump 4 (A4): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62071": {
+  "name": "hp5HighPressure",
+  "description": "Heat pump 5 (A5): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62072": {
+  "name": "hp6HighPressure",
+  "description": "Heat pump 6 (A6): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62073": {
+  "name": "hp7HighPressure",
+  "description": "Heat pump 7 (A7): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62074": {
+  "name": "hp8HighPressure",
+  "description": "Heat pump 8 (A8): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62075": {
+  "name": "hp9HighPressure",
+  "description": "Heat pump 9 (A9): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62076": {
+  "name": "hp10HighPressure",
+  "description": "Heat pump 10 (A10): High pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62077": {
+  "name": "hp1LowPressure",
+  "description": "Heat pump 1 (A1): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62078": {
+  "name": "hp2LowPressure",
+  "description": "Heat pump 2 (A2): Low pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62079": {
+  "name": "hp3LowPressure",
+  "description": "Heat pump 3 (A3): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62080": {
+  "name": "hp4LowPressure",
+  "description": "Heat pump 4 (A4): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62081": {
+  "name": "hp5LowPressure",
+  "description": "Heat pump 5 (A5): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62082": {
+  "name": "hp6LowPressure",
+  "description": "Heat pump 6 (A6): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62083": {
+  "name": "hp7LowPressure",
+  "description": "Heat pump 7 (A7): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62084": {
+  "name": "hp8LowPressure",
+  "description": "Heat pump 8 (A8): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62085": {
+  "name": "hp9LowPressure",
+  "description": "Heat pump 9 (A9): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62086": {
+  "name": "hp10LowPressure",
+  "description": "Heat pump 10 (A10): Low Pressure",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62087": {
+  "name": "hp1BrineTempIn",
+  "description": "Heat pump 1 (A1): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62088": {
+  "name": "hp2BrineTempIn",
+  "description": "Heat pump 2 (A2): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62089": {
+  "name": "hp3BrineTempIn",
+  "description": "Heat pump 3 (A3): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62090": {
+  "name": "hp4BrineTempIn",
+  "description": "Heat pump 4 (A4): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62091": {
+  "name": "hp5BrineTempIn",
+  "description": "Heat pump 5 (A5): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62092": {
+  "name": "hp6BrineTempIn",
+  "description": "Heat pump 6 (A6): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62093": {
+  "name": "hp7BrineTempIn",
+  "description": "Heat pump 7 (A7): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62094": {
+  "name": "hp8BrineTempIn",
+  "description": "Heat pump 8 (A8): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62095": {
+  "name": "hp9BrineTempIn",
+  "description": "Heat pump 9 (A9): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62096": {
+  "name": "hp10BrineTempIn",
+  "description": "Heat pump 10 (A10): Brine in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62097": {
+  "name": "hp1BrineTempOut",
+  "description": "Heat pump 1 (A1): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62098": {
+  "name": "hp2BrineTempOut",
+  "description": "Heat pump 2 (A2): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62099": {
+  "name": "hp3BrineTempOut",
+  "description": "Heat pump 3 (A3): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62100": {
+  "name": "hp4BrineTempOut",
+  "description": "Heat pump 4 (A4): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62101": {
+  "name": "hp5BrineTempOut",
+  "description": "Heat pump 5 (A5): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62102": {
+  "name": "hp6BrineTempOut",
+  "description": "Heat pump 6 (A6): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62103": {
+  "name": "hp7BrineTempOut",
+  "description": "Heat pump 7 (A7): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62104": {
+  "name": "hp8BrineTempOut",
+  "description": "Heat pump 8 (A8): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62105": {
+  "name": "hp9BrineTempOut",
+  "description": "Heat pump 9 (A9): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62106": {
+  "name": "hp10BrineTempOut",
+  "description": "Heat pump 10 (A10): Brine out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62107": {
+  "name": "hp1ChargePump",
+  "description": "Heat pump 1 (A1): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62108": {
+  "name": "hp2ChargePump",
+  "description": "Heat pump 2 (A2): Chargepump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62109": {
+  "name": "hp3ChargePump",
+  "description": "Heat pump 3 (A3): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62110": {
+  "name": "hp4ChargePump",
+  "description": "Heat pump 4 (A4): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62111": {
+  "name": "hp5ChargePump",
+  "description": "Heat pump 5 (A5): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62112": {
+  "name": "hp6ChargePump",
+  "description": "Heat pump 6 (A6): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62113": {
+  "name": "hp7ChargePump",
+  "description": "Heat pump 7 (A7): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62114": {
+  "name": "hp8ChargePump",
+  "description": "Heat pump 8 (A8): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62115": {
+  "name": "hp9ChargePump",
+  "description": "Heat pump 9 (A9): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62116": {
+  "name": "hp10ChargePump",
+  "description": "Heat pump 10 (A10): Charge pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62117": {
+  "name": "hp1BrinePump",
+  "description": "Heat pump 1 (A1): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62118": {
+  "name": "hp2BrinePump",
+  "description": "Heat pump 2 (A2): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62119": {
+  "name": "hp3BrinePump",
+  "description": "Heat pump 3 (A3): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62120": {
+  "name": "hp4BrinePump",
+  "description": "Heat pump 4 (A4): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62121": {
+  "name": "hp5BrinePump",
+  "description": "Heat pump 5 (A5): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62122": {
+  "name": "hp6BrinePump",
+  "description": "Heat pump 6 (A6): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62123": {
+  "name": "hp7BrinePump",
+  "description": "Heat pump 7 (A7): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62124": {
+  "name": "hp8BrinePump",
+  "description": "Heat pump 8 (A8): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62125": {
+  "name": "hp9BrinePump",
+  "description": "Heat pump 9 (A9): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62126": {
+  "name": "hp10BrinePump",
+  "description": "Heat pump 10 (A10): Brine pump",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62127": {
+  "name": "hp1Fan",
+  "description": "Heat pump 1 (A1): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62128": {
+  "name": "hp2Fan",
+  "description": "Heat pump 2 (A2) Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62129": {
+  "name": "hp3Fan",
+  "description": "Heat pump 3 (A3): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62130": {
+  "name": "hp4Fan",
+  "description": "Heat pump 4 (A4): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62131": {
+  "name": "hp5Fan",
+  "description": "Heat pump 5 (A5): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62132": {
+  "name": "hp6Fan",
+  "description": "Heat pump 6 (A6): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62133": {
+  "name": "hp7Fan",
+  "description": "Heat pump 7 (A7): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62134": {
+  "name": "hp8Fan",
+  "description": "Heat pump 8 (A8): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62135": {
+  "name": "hp9Fan",
+  "description": "Heat pump 9 (A9): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62136": {
+  "name": "hp10Fan",
+  "description": "Heat pump 10 (A10): Fan",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62137": {
+  "name": "hp1DefrostTimer",
+  "description": "Heat pump 1 (A1): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62138": {
+  "name": "hp2DefrostTimer",
+  "description": "Heat pump 2 (A2) Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62139": {
+  "name": "hp3DefrostTimer",
+  "description": "Heat pump 3 (A3): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62140": {
+  "name": "hp4DefrostTimer",
+  "description": "Heat pump 4 (A4): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62141": {
+  "name": "hp5DefrostTimer",
+  "description": "Heat pump 5 (A5): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62142": {
+  "name": "hp6DefrostTimer",
+  "description": "Heat pump 6 (A6): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62143": {
+  "name": "hp7DefrostTimer",
+  "description": "Heat pump 7 (A7): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62144": {
+  "name": "hp8DefrostTimer",
+  "description": "Heat pump 8 (A8): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62145": {
+  "name": "hp9DefrostTimer",
+  "description": "Heat pump 9 (A9): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62146": {
+  "name": "hp10DefrostTimer",
+  "description": "Heat pump 10 (A10): Defrost timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62147": {
+  "name": "hp1OutsideTemp",
+  "description": "Heat pump 1 (A1): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62148": {
+  "name": "hp2OutsideTemp",
+  "description": "Heat pump 2 (A2) Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62149": {
+  "name": "hp3OutsideTemp",
+  "description": "Heat pump 3 (A3): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62150": {
+  "name": "hp4OutsideTemp",
+  "description": "Heat pump 4 (A4): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62151": {
+  "name": "hp5OutsideTemp",
+  "description": "Heat pump 5 (A5): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62152": {
+  "name": "hp6OutsideTemp",
+  "description": "Heat pump 6 (A6): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62153": {
+  "name": "hp7OutsideTemp",
+  "description": "Heat pump 7 (A7): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62154": {
+  "name": "hp8OutsideTemp",
+  "description": "Heat pump 8 (A8): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62155": {
+  "name": "hp9OutsideTemp",
+  "description": "Heat pump 9 (A9): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62156": {
+  "name": "hp10OutsideTemp",
+  "description": "Heat pump 10 (A10): Outdoor temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62157": {
+  "name": "hp1SWVersion",
+  "description": "Heat pump 1 (A1): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62158": {
+  "name": "hp2SWVersion",
+  "description": "Heat pump 2 (A2): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62159": {
+  "name": "hp3SWVersion",
+  "description": "Heat pump 3 (A3): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62160": {
+  "name": "hp4SWVersion",
+  "description": "Heat pump 4 (A4): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62161": {
+  "name": "hp5SWVersion",
+  "description": "Heat pump 5 (A5): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62162": {
+  "name": "hp6SWVersion",
+  "description": "Heat pump 6 (A6): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62163": {
+  "name": "hp7SWVersion",
+  "description": "Heat pump 7 (A7): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62164": {
+  "name": "hp8SWVersion",
+  "description": "Heat pump 8 (A8): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62165": {
+  "name": "hp9SWVersion",
+  "description": "Heat pump 9 (A9): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62166": {
+  "name": "hp10SWVersion",
+  "description": "Heat pump 10 (A10): Software version",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62167": {
+  "name": "sDM",
+  "description": "Degree minute",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62168": {
+  "name": "sPowerConsumption",
+  "description": "Power kW immersion heater",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62169": {
+  "name": "sPowerConsumptionHS",
+  "description": "Power kW immersion heater lower",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62170": {
+  "name": "sCurrent",
+  "description": "Maximum current",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62171": {
+  "name": "s1Current",
+  "description": "Current L1",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62172": {
+  "name": "s2Current",
+  "description": "Current L2",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62173": {
+  "name": "s3Current",
+  "description": "Current L3",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62174": {
+  "name": "sDiffThermostatPump",
+  "description": "Pump Diff thermostat",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62175": {
+  "name": "sDiffThermostatTemp",
+  "description": "Diff thermostat ° C",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62176": {
+  "name": "ehsTemp",
+  "description": "EHS: Temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62177": {
+  "name": "ehsStatus",
+  "description": "EHS: Primary flow -> Mode",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62178": {
+  "name": "poolStatus",
+  "description": "Pool Mode",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62179": {
+  "name": "poolTemp",
+  "description": "Pool: Temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62180": {
+  "name": "poolTempStop",
+  "description": "Pool: Stop temperature",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62181": {
+  "name": "sunStatus",
+  "description": "Solar: Mode 0=Off, 1=On",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62182": {
+  "name": "sunTempOut",
+  "description": "Solar: Temperature out",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62183": {
+  "name": "sunTempIn",
+  "description": "Solar: Temperature in",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62184": {
+  "name": "sunPump",
+  "description": "Solar: Pump panel",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62185": {
+  "name": "sTankTimer",
+  "description": "Tank Timer",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62186": {
+  "name": "sTotalTime",
+  "description": "Stat: Total Operation LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62191": {
+  "name": "sElHeaterConsumption",
+  "description": "Stat: Immersion heater kWh",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62192": {
+  "name": "sFuncTest",
+  "description": "Function Test",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62193": {
+  "name": "hp1CurrRPS",
+  "description": "Heat pump 1 (A1): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62194": {
+  "name": "hp2CurrRPS",
+  "description": "Heat pump 2 (A2): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62195": {
+  "name": "hp3CurrRPS",
+  "description": "Heat pump 3 (A3): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62196": {
+  "name": "hp4CurrRPS",
+  "description": "Heat pump 4 (A4): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62197": {
+  "name": "hp5CurrRPS",
+  "description": "Heat pump 5 (A5): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62198": {
+  "name": "hp6CurrRPS",
+  "description": "Heat pump 6 (A6): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62199": {
+  "name": "hp7CurrRPS",
+  "description": "Heat pump 7 (A7): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62200": {
+  "name": "hp8CurrRPS",
+  "description": "Heat pump 8 (A8): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62201": {
+  "name": "hp9CurrRPS",
+  "description": "Heat pump 9 (A9): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62202": {
+  "name": "hp10CurrRPS",
+  "description": "Heat pump 10 (A10): Current RPS",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62203": {
+  "name": "hs1TempCurr",
+  "description": "Current room temp 1",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62204": {
+  "name": "hs2TempCurr",
+  "description": "Current room temp 2",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62205": {
+  "name": "hs3TempCurr",
+  "description": "Current room temp 3",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62206": {
+  "name": "hs4TempCurr",
+  "description": "Current room temp 4",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62207": {
+  "name": "sSystemType",
+  "description": "System Type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62208": {
+  "name": "woodFlueGasTemp",
+  "description": "Wood: Flue gas temperature (B8)",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62209": {
+  "name": "woodBoilerTemp",
+  "description": "Wood: Temperature boiler (B9)",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62210": {
+  "name": "ex1BoilerTemp",
+  "description": "E1: Boiler temperature (B9)",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62211": {
+  "name": "ex1BoilerTempOut",
+  "description": "E1: Temperature boiler out (B10)",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62212": {
+  "name": "ex2Steps",
+  "description": "E2: Number of steps",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62213": {
+  "name": "ex3Status",
+  "description": "E3: Status",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62214": {
+  "name": "hp1CompressorTime",
+  "description": "State: Compressor 1 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62216": {
+  "name": "hp2CompressorTime",
+  "description": "State: Compressor 2 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62218": {
+  "name": "hp3CompressorTime",
+  "description": "State: Compressor 3 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62220": {
+  "name": "hp4CompressorTime",
+  "description": "State: Compressor 4 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62222": {
+  "name": "hp5CompressorTime",
+  "description": "State: Compressor 5 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62224": {
+  "name": "hp6CompressorTime",
+  "description": "State: Compressor 6 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62226": {
+  "name": "hp7CompressorTime",
+  "description": "State: Compressor 7 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62228": {
+  "name": "hp8CompressorTime",
+  "description": "State: Compressor 8 operating hours LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62230": {
+  "name": "hp9CompressorTime",
+  "description": "State: Compressor 9 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62232": {
+  "name": "hp10CompressorTime",
+  "description": "State: Compressor 10 operating time LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62234": {
+  "name": "hp1CompressorTime24H",
+  "description": "State: Compressor 1 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62235": {
+  "name": "hp2CompressorTime24H",
+  "description": "State: Compressor 2 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62236": {
+  "name": "hp3CompressorTime24H",
+  "description": "State: Compressor 3 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62237": {
+  "name": "hp4CompressorTime24H",
+  "description": "State: Compressor 4 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62238": {
+  "name": "hp5CompressorTime24H",
+  "description": "State: Compressor 5 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62239": {
+  "name": "hp6CompressorTime24H",
+  "description": "State: Compressor 6 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62240": {
+  "name": "hp7CompressorTime24H",
+  "description": "State: Compressor 7 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62241": {
+  "name": "hp8CompressorTime24H",
+  "description": "State: Compressor 8 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62242": {
+  "name": "hp9CompressorTime24H",
+  "description": "State: Compressor 9 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62243": {
+  "name": "hp10CompressorTime24H",
+  "description": "State: Compressor 10 last 24h",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62244": {
+  "name": "sSoftwareVersionMD",
+  "description": "Software version Display month day",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62245": {
+  "name": "sSoftwareVersionYear",
+  "description": "Software version Display year",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62246": {
+  "name": "hs1Status",
+  "description": "Heating system 1 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62247": {
+  "name": "hs2Status",
+  "description": "Heating system 2 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62248": {
+  "name": "hs3Status",
+  "description": "Heating system 3 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62249": {
+  "name": "hs4Status",
+  "description": "Heating system 4 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62250": {
+  "name": "exbUpperTemp",
+  "description": "Ext buffer tank upper B41",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62251": {
+  "name": "exbLowerTemp",
+  "description": "Ext buffer tank lower B42",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62252": {
+  "name": "exbDHWTemp",
+  "description": "Ext DHW buffer tank B43",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62253": {
+  "name": "sProductType",
+  "description": "Product type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62254": {
+  "name": "hp1Type",
+  "description": "Heat pump 1 (A1) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62255": {
+  "name": "hp2Type",
+  "description": "Heat pump 2 (A2) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62256": {
+  "name": "hp3Type",
+  "description": "Heat pump 3 (A3) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62257": {
+  "name": "hp4Type",
+  "description": "Heat pump 4 (A4) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62258": {
+  "name": "hp5Type",
+  "description": "Heat pump 5 (A5) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62259": {
+  "name": "hp6Type",
+  "description": "Heat pump 6 (A6) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62260": {
+  "name": "hp7Type",
+  "description": "Heat pump 7 (A7) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62261": {
+  "name": "hp8Type",
+  "description": "Heat pump 8 (A8) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62262": {
+  "name": "hp9Type",
+  "description": "Heat pump 9 (A9) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62263": {
+  "name": "hp10Type",
+  "description": "Heat pump 10 (A10) type",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62264": {
+  "name": "hp1CompressorModel",
+  "description": "Heat pump 1 (A1) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62265": {
+  "name": "hp2CompressorModel",
+  "description": "Heat pump 2 (A2) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62266": {
+  "name": "hp3CompressorModel",
+  "description": "Heat pump 3 (A3) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62267": {
+  "name": "hp4CompressorModel",
+  "description": "Heat pump 4 (A4) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62268": {
+  "name": "hp5CompressorModel",
+  "description": "Heat pump 5 (A5) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62269": {
+  "name": "hp6CompressorModel",
+  "description": "Heat pump 6 (A6) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62270": {
+  "name": "hp7CompressorModel",
+  "description": "Heat pump 7 (A7) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62271": {
+  "name": "hp8CompressorModel",
+  "description": "Heat pump 8 (A8) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62272": {
+  "name": "hp9CompressorModel",
+  "description": "Heat pump 9 (A9) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62273": {
+  "name": "hp10CompressorModel",
+  "description": "Heat pump 10 (A10) compressor model",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62274": {
+  "name": "sTankLowerSetp",
+  "description": "Setpoint lower tank",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62275": {
+  "name": "sDHWLowerTemp",
+  "description": "Actual temperature DHW lower",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62276": {
+  "name": "sDHWUpperTemp",
+  "description": "Actual temperature DHW",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62277": {
+  "name": "sSunTankTemp",
+  "description": "Actual temperature tank solar coil",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62278": {
+  "name": "sElHeaterTankUpperCalcSetp",
+  "description": "Calculated setpoint for upper tank when el. heater is used",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62279": {
+  "name": "sDHWCapacity",
+  "description": "Current DHW capacity in percent",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62280": {
+  "name": "sFanExhaustPct",
+  "description": "Exhaust fan speed percent",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62281": {
+  "name": "sHighestCO2",
+  "description": "Highest measured CO2",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62282": {
+  "name": "sHighestRH",
+  "description": "Highest measured humidity",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62283": {
+  "name": "sVentMaintFilterDays",
+  "description": "Days until filter maintenance",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62284": {
+  "name": "sVentNightcoolStatus",
+  "description": "Ventilation night cooling status",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62288": {
+  "name": "x",
+  "description": "Cooling tank setp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62289": {
+  "name": "x",
+  "description": "Cooling tank temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62290": {
+  "name": "x",
+  "description": "Active cooling return temp",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62291": {
+  "name": "x",
+  "description": "Heat pump 1 (A1) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62292": {
+  "name": "x",
+  "description": "Heat pump 2 (A2) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62293": {
+  "name": "x",
+  "description": "Heat pump 3 (A3) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62294": {
+  "name": "x",
+  "description": "Heat pump 4 (A4) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62295": {
+  "name": "x",
+  "description": "Heat pump 5 (A5) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62296": {
+  "name": "x",
+  "description": "Heat pump 6 (A6) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62297": {
+  "name": "x",
+  "description": "Heat pump 7 (A7) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62298": {
+  "name": "x",
+  "description": "Heat pump 8 (A8) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62299": {
+  "name": "x",
+  "description": "Heat pump 9 (A9) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62300": {
+  "name": "x",
+  "description": "Heat pump 10 (A10) Primary system flow",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62301": {
+  "name": "x",
+  "description": "SGMode 0 = None/Normal, 1 = Block, 2 = Low price, 3 = High cap",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62302": {
+  "name": "x",
+  "description": "Elspot Price/MWh Integer (Currency depending on region)",
+  "signed": true,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62303": {
+  "name": "x",
+  "description": "Elspot Price/MWh 4 decimals",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62304": {
+  "name": "x",
+  "description": "RadiatorPump1",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62305": {
+  "name": "x",
+  "description": "RadiatorPump2",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62306": {
+  "name": "x",
+  "description": "RadiatorPump3_G3",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62307": {
+  "name": "x",
+  "description": "RadiatorPump4_G4",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62308": {
+  "name": "x",
+  "description": "Heating system 1: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62309": {
+  "name": "x",
+  "description": "Heating system 2: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62310": {
+  "name": "x",
+  "description": "Heating system 3: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62311": {
+  "name": "x",
+  "description": "Heating system 4: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62312": {
+  "name": "x",
+  "description": "PumpG41 Extern DHW",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62313": {
+  "name": "x",
+  "description": "HotWaterValve",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62314": {
+  "name": "x",
+  "description": "ExtBoilerOn",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62315": {
+  "name": "x",
+  "description": "EL1 Relay Bit 0: A, Bit 1: B",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62316": {
+  "name": "x",
+  "description": "EL2 Relay Bit 0: A, Bit 1: B",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62317": {
+  "name": "x",
+  "description": "EL3 Relay Bit 0: A, Bit 1: B",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62318": {
+  "name": "x",
+  "description": "ElHeater3_6kW",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62319": {
+  "name": "x",
+  "description": "EVK: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62320": {
+  "name": "x",
+  "description": "ExtBoiler: Shunt state 0 = Close, 1 = Inactive, 2 = Open",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62321": {
+  "name": "x",
+  "description": "Active Cooling: Valve",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62322": {
+  "name": "x",
+  "description": "Active Cooling: Demand",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62323": {
+  "name": "x",
+  "description": "DHWPump: 0-100",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62324": {
+  "name": "x",
+  "description": "SolarTankSelection",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62325": {
+  "name": "x",
+  "description": "SolarBedrockSelection",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62326": {
+  "name": "x",
+  "description": "HotWaterValve2",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62327": {
+  "name": "x",
+  "description": "E4",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62328": {
+  "name": "x",
+  "description": "E1",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62330": {
+  "name": "x",
+  "description": "Current room temp cooling",
+  "signed": true,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62331": {
+  "name": "x",
+  "description": "HP1 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62332": {
+  "name": "x",
+  "description": "HP2 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62333": {
+  "name": "x",
+  "description": "HP3 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62334": {
+  "name": "x",
+  "description": "HP4 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62335": {
+  "name": "x",
+  "description": "HP5 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62336": {
+  "name": "x",
+  "description": "HP6 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62337": {
+  "name": "x",
+  "description": "HP7 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62338": {
+  "name": "x",
+  "description": "HP8 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62339": {
+  "name": "x",
+  "description": "HP9 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62340": {
+  "name": "x",
+  "description": "HP10 Power consumption kW",
+  "signed": false,
+  "access": "R",
+  "factor": 0.1,
+  "words": 1
+ },
+ "62341": {
+  "name": "x",
+  "description": "Compressor 1 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62343": {
+  "name": "x",
+  "description": "Compressor 2 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62345": {
+  "name": "x",
+  "description": "Compressor 3 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62347": {
+  "name": "x",
+  "description": "Compressor 4 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62349": {
+  "name": "x",
+  "description": "Compressor 5 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62351": {
+  "name": "x",
+  "description": "Compressor 6 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62353": {
+  "name": "x",
+  "description": "Compressor 7 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62355": {
+  "name": "x",
+  "description": "Compressor 8 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62357": {
+  "name": "x",
+  "description": "Compressor 9 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62359": {
+  "name": "x",
+  "description": "Compressor 10 Power consumption kWh LSB",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 2
+ },
+ "62362": {
+  "name": "x",
+  "description": "HBT top temp",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62363": {
+  "name": "x",
+  "description": "DHW tank top temp",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62364": {
+  "name": "x",
+  "description": "Cooling tank top temp",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ },
+ "62365": {
+  "name": "x",
+  "description": "Periodic extra DHW status 0 = periodic extra DHW not defined 1 = periodic extra DHW active 2 = periodic extra DHW off, normal 3 = periodic extra DHW off, last D",
+  "signed": false,
+  "access": "R",
+  "factor": 1.0,
+  "words": 1
+ }
+}
