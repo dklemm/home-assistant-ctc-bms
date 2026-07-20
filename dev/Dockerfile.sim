@@ -1,0 +1,12 @@
+# The fake CTC controller, so the stack runs without the real heat pump.
+# fake_ctc_server.py is bind-mounted by docker-compose, so edits to it only
+# need a `docker compose restart ctc-sim`, not a rebuild.
+FROM python:3.13-slim
+
+RUN pip install --no-cache-dir "pymodbus>=3.13,<4"
+
+WORKDIR /app
+COPY fake_ctc_server.py .
+
+# 0.0.0.0, not 127.0.0.1: the HA container has to reach it across the network.
+CMD ["python", "-u", "fake_ctc_server.py", "--host", "0.0.0.0", "--port", "5020"]

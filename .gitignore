@@ -220,3 +220,7 @@ __marimo__/
 # local HA dev instance (ln -s custom_components into it; see README)
 config/
 .DS_Store
+
+# dev Home Assistant instance state (keep only its configuration.yaml)
+dev/ha-config/*
+!dev/ha-config/configuration.yaml

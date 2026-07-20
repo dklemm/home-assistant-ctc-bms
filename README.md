@@ -66,7 +66,35 @@ Everything for developing without (or against) the real pump lives in
   and not part of this repo; `dev/bms_registers.json` (the parsed intermediate)
   is committed so the map can be regenerated without it.
 
-Local dev loop (macOS/Linux, Python ≥ 3.14):
+### Test in Docker (a real HA, like production)
+
+```sh
+cd dev && docker compose up --build      # HA on http://localhost:8123
+```
+
+Brings up Home Assistant with this integration mounted in, plus the simulated
+controller. After the onboarding screen: Settings → Devices & Services → **Add
+Integration** → *CTC Heat Pump (BMS)*, then either
+
+| target | host | port | device id |
+|---|---|---|---|
+| simulator | `ctc-sim` | 5020 | 1 |
+| real pump | `192.168.1.100` | 502 | 1 |
+
+Bridge networking reaches both — the real controller on the LAN needs no host
+networking, since the integration only makes an outbound TCP connection and
+uses no discovery. The simulator is also published on the host at
+`127.0.0.1:5020` for the CLI.
+
+Python is not hot-reloaded; after editing the integration:
+
+```sh
+docker compose restart homeassistant
+docker compose logs -f homeassistant     # component logs at debug
+```
+
+### Local dev loop (macOS/Linux, Python ≥ 3.14)
+
 
 ```sh
 python3.14 -m venv .venv && source .venv/bin/activate

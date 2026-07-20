@@ -1,0 +1,11 @@
+# Config for the throwaway dev Home Assistant (dev/docker-compose.yml).
+# Not related to your production HA config.
+
+default_config:
+
+logger:
+  default: warning
+  logs:
+    custom_components.ctc_bms: debug
+    # raise to debug to see individual Modbus transactions on the wire
+    pymodbus: info

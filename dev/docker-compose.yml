@@ -1,0 +1,54 @@
+# A throwaway Home Assistant with this integration mounted in, plus a simulated
+# CTC controller. Mirrors the production HA (same container image) without
+# touching it.
+#
+#   cd dev && docker compose up --build      # HA on http://localhost:8123
+#
+# Add the integration via Settings -> Devices & Services -> Add Integration ->
+# "CTC Heat Pump (BMS)", then:
+#   simulator:  host ctc-sim        port 5020   device id 1
+#   real pump:  host 192.168.1.100  port 502    device id 1
+#
+# NETWORKING: bridge (the default below) reaches BOTH. Outbound traffic is
+# NAT'd, so the real controller on the LAN is reachable without host mode;
+# this integration only makes an outbound TCP connection to a fixed IP and
+# uses no discovery (mDNS/SSDP), which is the only thing host mode would add.
+# On macOS host mode is also counterproductive - Docker Desktop's "host" is the
+# Linux VM, not macOS, so it breaks the localhost:8123 publishing below.
+# On a Linux docker host, if you do want host networking, drop the `ports:`
+# block and set:
+#   network_mode: host
+# then reach the simulator at 127.0.0.1:5020 instead of ctc-sim:5020.
+#
+# Python isn't hot-reloaded: after editing the integration run
+#   docker compose restart homeassistant
+
+services:
+  ctc-sim:
+    build:
+      context: .
+      dockerfile: Dockerfile.sim
+    container_name: ctc-sim
+    volumes:
+      # mounted, so editing the simulator only needs a restart
+      - ./fake_ctc_server.py:/app/fake_ctc_server.py:ro
+    ports:
+      # exposed so the dev/ctc_modbus_test.py CLI can talk to it from the host:
+      #   python dev/ctc_modbus_test.py --host 127.0.0.1 --port 5020 verify
+      - "5020:5020"
+    restart: unless-stopped
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: ctc-homeassistant
+    depends_on:
+      - ctc-sim
+    volumes:
+      - ./ha-config:/config
+      # the integration itself, live from the working tree
+      - ../custom_components/ctc_bms:/config/custom_components/ctc_bms
+    ports:
+      - "8123:8123"
+    environment:
+      - TZ=Europe/London
+    restart: unless-stopped
