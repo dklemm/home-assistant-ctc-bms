@@ -23,6 +23,10 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Brand assets require a separate PR to home-assistant/brands, which
+          # only happens at (or after) HACS-default submission. Ignore that one
+          # check until then; everything else must pass.
+          ignore: brands
 
   tests:
     name: Tests
