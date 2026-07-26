@@ -11,18 +11,29 @@ It talks pymodbus directly — no YAML `modbus:` platform, no templates:
   against a register that is guaranteed to exist.
 - **Hardware detection**: the BMS answers for all 10 possible heat pumps and 4
   heating systems whether they exist or not (absent hardware reads 0, unfitted
-  sensors read −9999/−10000). The flow detects what is actually fitted and only
-  creates those devices. Idle hardware (summer!) can be force-enabled in
-  Options.
+  sensors read −9999/−10000). The flow detects which heat pumps and heating
+  systems are actually fitted and only creates those devices. Idle hardware
+  (summer!) can be force-enabled in Options.
+- **Subsystems from the model**: hot water, solar, pool, cooling, ventilation
+  and additional heat get their own devices, but which of them exist *cannot*
+  be detected — unfitted hardware answers with plausible values rather than
+  sentinels (no solar fitted still reports a panel temperature). So the
+  controller's model seeds a set of checkboxes and you correct it in Options.
 - **Proper devices**: one HA device per real thing — System, Heat Pump *n*,
-  Heating System *n* — with entities attached to the right one.
+  Heating System *n*, plus a device per subsystem — with entities attached to
+  the right one.
 - **Fast, gentle polling**: registers are read in ≤100-register blocks (one
   block costs the same ~10 ms as one register), one request outstanding at a
   time (the controller cannot pipeline), default every 30 s.
-- **Writable setpoints**: a curated set of RW registers (room temperature
-  setpoints, night reduction, DHW stop temperature, compressor max RPS) as
-  number entities, written with FC16. Can be disabled entirely in Options for
-  a read-only integration.
+- **Writable setpoints, selects and switches**: a curated set of RW registers
+  (room temperature setpoints, night reduction, DHW stop temperature, compressor
+  max RPS, heating and hot water modes, blocking a heat pump) written with FC16.
+  Deliberately small — the write goes to a live heating system, so a register
+  only becomes writable if the manual documents its limits or its complete value
+  set. Can be disabled entirely in Options for a read-only integration.
+- **The right entity type**: documented states become enum sensors reporting
+  "Compressor on, heating" rather than `3`; the two-position diverter valves
+  become valves; pump on/off outputs become binary sensors.
 - Correct decoding of negative temperatures, the −9999/−10000 "no sensor"
   sentinel (shown as *unknown*), and the controller's LSB-first 32-bit values.
 
@@ -47,7 +58,9 @@ Settings → Devices & Services → CTC Heat Pump (BMS) → **Configure**:
 
 - Poll interval (5–300 s, default 30)
 - Which heat pumps / heating systems get devices (pre-filled by detection)
-- Whether writable setpoint entities are created
+- Controller model, and which subsystems get devices (pre-filled from the
+  model; unticking one removes its device and stops polling its registers)
+- Whether writable entities are created
 
 ## Development
 
@@ -64,7 +77,14 @@ Everything for developing without (or against) the real pump lives in
   register map is **generated**; never hand-edit
   `custom_components/ctc_bms/registers.py`. The BMS manual PDF is copyrighted
   and not part of this repo; `dev/bms_registers.json` (the parsed intermediate)
-  is committed so the map can be regenerated without it.
+  is committed so the map can be regenerated without it. `parse_bms.py` takes
+  the path to your own copy of the manual.
+
+  The register numbers, scale factors and description strings in
+  `dev/bms_registers.json` are extracted from CTC's BMS manual (*User
+  Manual-BMS Manual-16260016*) and remain CTC's copyright; they are included
+  here only as the protocol description needed to talk to the hardware. CTC is
+  not affiliated with this project.
 
 ### Test in Docker (a real HA, like production)
 
@@ -79,7 +99,7 @@ Integration** → *CTC Heat Pump (BMS)*, then either
 | target | host | port | device id |
 |---|---|---|---|
 | simulator | `ctc-sim` | 5020 | 1 |
-| real pump | `192.168.1.100` | 502 | 1 |
+| real pump | your controller's address | 502 | 1 |
 
 Bridge networking reaches both — the real controller on the LAN needs no host
 networking, since the integration only makes an outbound TCP connection and

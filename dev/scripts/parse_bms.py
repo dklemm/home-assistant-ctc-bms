@@ -15,10 +15,11 @@ from pathlib import Path
 
 from pypdf import PdfReader
 
-# The manual is copyrighted and NOT committed to this repo; pass its path as the
-# first argument (or keep a copy next to this default).
-PDF = sys.argv[1] if len(sys.argv) > 1 else \
-    "/path/to/BMS-Manual-16260016.pdf"
+# The manual is copyrighted and NOT committed to this repo, so there is no
+# default: pass your own copy's path as the first argument.
+if len(sys.argv) < 2:
+    sys.exit(f"usage: {Path(sys.argv[0]).name} /path/to/BMS-Manual-16260016.pdf")
+PDF = sys.argv[1]
 OUT = Path(__file__).resolve().parents[1] / "bms_registers.json"
 
 reader = PdfReader(PDF)

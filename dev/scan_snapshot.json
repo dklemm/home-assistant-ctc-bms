@@ -4501,9 +4501,9 @@
  },
  "61500": {
   "raw": 1,
-  "name": "sOutsideTemp",
-  "description": "Hot water mode 0=Ecomony, 1=Normal, 2=Comfort 1 RW 60000 60001 60002 6...",
-  "value": 0.1
+  "name": "sDHWMode",
+  "description": "Hot water mode 0=Ecomony, 1=Normal, 2=Comfort",
+  "value": 1.0
  },
  "61501": {
   "raw": 500
@@ -6032,7 +6032,7 @@
  "62005": {
   "raw": 5,
   "name": "sStatus",
-  "description": "Status 0: HP upper , 1: HP lower , 2: Add 3: HP + Add, 4: HC, 5: DHW 6...",
+  "description": "Status 0: HP upper , 1: HP lower , 2: Add 3: HP + Add, 4: HC, 5: DHW 6: Pool, 7: Off, 8: Heating mix 9: Wood, 10: DHW/HC, 11: Cooling, 12: Swap",
   "value": 5.0
  },
  "62006": {
@@ -6104,61 +6104,61 @@
  "62017": {
   "raw": 3,
   "name": "hp1Status",
-  "description": "Heat pump 1 (A1): Status 0=Compressor_off_start_delay, 1=Compressor_of...",
+  "description": "Heat pump 1 (A1): Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=",
   "value": 3.0
  },
  "62018": {
   "raw": 0,
   "name": "hp2Status",
-  "description": "Heat pump 2 (A2) status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 2 (A2) status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62019": {
   "raw": 0,
   "name": "hp3Status",
-  "description": "Heat pump 3 (A3) Status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 3 (A3) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62020": {
   "raw": 0,
   "name": "hp4Status",
-  "description": "Heat pump 4 (A4) Status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 4 (A4) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62021": {
   "raw": 0,
   "name": "hp5Status",
-  "description": "Heat pump 5 (A5) Status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 5 (A5) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62022": {
   "raw": 0,
   "name": "hp6Status",
-  "description": "Heat pump 6 (A6) Status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 6 (A6) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62023": {
   "raw": 0,
   "name": "hp7Status",
-  "description": "Heat pump 7 (A7) Status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 7 (A7) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62024": {
   "raw": 0,
   "name": "hp8Status",
-  "description": "Heat pump 8 (A8) Status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 8 (A8) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62025": {
   "raw": 0,
   "name": "hp9Status",
-  "description": "Heat pump 9 (A9) Status 0=Compressor_off_start_delay, 1=Compressor_off...",
+  "description": "Heat pump 9 (A9) Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, 5=C",
   "value": 0.0
  },
  "62026": {
   "raw": 0,
   "name": "hp10Status",
-  "description": "Heat pump 10 (A10): Status 0=Compressor_off_start_delay, 1=Compressor_...",
+  "description": "Heat pump 10 (A10): Status 0=Compressor_off_start_delay, 1=Compressor_off_redy_to_start 2=Compressor_wait_until_flow, 3=Comperssor_on_heating 4=Defrost_active, ",
   "value": 0.0
  },
  "62027": {
@@ -7052,7 +7052,7 @@
  "62175": {
   "raw": 0,
   "name": "sDiffThermostatTemp",
-  "description": "Diff thermostat ° C",
+  "description": "Diff thermostat \u00b0 C",
   "value": 0.0
  },
  "62176": {
@@ -7436,25 +7436,25 @@
  "62246": {
   "raw": 0,
   "name": "hs1Status",
-  "description": "Heating system 1 status 0 = Heating off, 1 = Vacation, 2= Night reduct...",
+  "description": "Heating system 1 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
   "value": 0.0
  },
  "62247": {
   "raw": 0,
   "name": "hs2Status",
-  "description": "Heating system 2 status 0 = Heating off, 1 = Vacation, 2= Night reduct...",
+  "description": "Heating system 2 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
   "value": 0.0
  },
  "62248": {
   "raw": 0,
   "name": "hs3Status",
-  "description": "Heating system 3 status 0 = Heating off, 1 = Vacation, 2= Night reduct...",
+  "description": "Heating system 3 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
   "value": 0.0
  },
  "62249": {
   "raw": 0,
   "name": "hs4Status",
-  "description": "Heating system 4 status 0 = Heating off, 1 = Vacation, 2= Night reduct...",
+  "description": "Heating system 4 status 0 = Heating off, 1 = Vacation, 2= Night reduction, 3= On (normal mode)",
   "value": 0.0
  },
  "62250": {
@@ -8138,7 +8138,7 @@
  "62365": {
   "raw": 2,
   "name": "x",
-  "description": "Periodic extra DHW status 0 = periodic extra DHW not defined 1 = perio...",
+  "description": "Periodic extra DHW status 0 = periodic extra DHW not defined 1 = periodic extra DHW active 2 = periodic extra DHW off, normal 3 = periodic extra DHW off, last D",
   "value": 2.0
  },
  "62366": {

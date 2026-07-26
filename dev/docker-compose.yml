@@ -6,8 +6,8 @@
 #
 # Add the integration via Settings -> Devices & Services -> Add Integration ->
 # "CTC Heat Pump (BMS)", then:
-#   simulator:  host ctc-sim        port 5020   device id 1
-#   real pump:  host 192.168.1.100  port 502    device id 1
+#   simulator:  host ctc-sim              port 5020   device id 1
+#   real pump:  host <controller address> port 502    device id 1
 #
 # NETWORKING: bridge (the default below) reaches BOTH. Outbound traffic is
 # NAT'd, so the real controller on the LAN is reachable without host mode;

@@ -9,7 +9,7 @@ from custom_components.ctc_bms.models import (
 
 
 def test_product_type_14_is_an_ecologic_m():
-    # Read off the live unit at 192.168.1.100: sProductType = 14.
+    # Read off a live EcoLogic M: sProductType = 14.
     assert model_for_product_type(14) == "ecologic_m"
 
 

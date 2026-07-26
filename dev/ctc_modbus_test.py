@@ -14,6 +14,9 @@ The BMS supports up to 10 heat pumps (HP1..HP10) and repeats every per-pump
 field 10 times. Most installations have one, so everything defaults to HP1;
 use --hp N to look at another.
 
+The controller's address is site-specific, so there is no default: pass --host,
+or export CTC_HOST=<address> once and omit it.
+
 Usage:
     python ctc_modbus_test.py verify            # read all registers for HP1
     python ctc_modbus_test.py --hp 2 verify     # ... for heat pump 2
@@ -30,6 +33,7 @@ Requires: pip install pymodbus   (tested with pymodbus 3.14, API >= 3.13)
 """
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
@@ -48,7 +52,9 @@ from registers import (MAX_HEAT_PUMPS, MAX_ZONES, SYSTEM_REGISTERS, Reg,
 # ---------------------------------------------------------------------------
 # Defaults - CTC "Set. BMS" screen
 # ---------------------------------------------------------------------------
-DEFAULT_HOST = "192.168.1.100"
+# No default host: the controller's address is site-specific. Pass --host, or
+# set CTC_HOST once in your shell to avoid typing it every time.
+DEFAULT_HOST = os.environ.get("CTC_HOST") or None
 DEFAULT_PORT = 502
 DEFAULT_DEVICE_ID = 1        # "MB Address: 1"
 # (Baudrate 9600 / parity E / 1 stop bit on that same screen are the RS-485
@@ -183,6 +189,9 @@ def next_live(client, start: int, end: int, device_id: int, stride: int) -> int:
 
 
 def connect(args) -> ModbusTcpClient:
+    # The only place a host is needed, so `list` and `ha` work offline.
+    if not args.host:
+        sys.exit("No controller address: pass --host, or set CTC_HOST.")
     # pymodbus retries 3x by default, which triples the cost of every dead
     # address - and reading a full register map hits plenty of those.
     client = ModbusTcpClient(args.host, port=args.port, timeout=args.timeout,
@@ -489,7 +498,9 @@ def main() -> int:
     p = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--host", default=DEFAULT_HOST)
+    p.add_argument("--host", default=DEFAULT_HOST,
+                   help="controller address (or set CTC_HOST); "
+                        "not needed by `list` or `ha`")
     p.add_argument("--port", type=int, default=DEFAULT_PORT)
     p.add_argument("--device-id", type=int, default=DEFAULT_DEVICE_ID,
                    help="Modbus unit/slave id (MB Address)")

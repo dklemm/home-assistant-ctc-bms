@@ -7,8 +7,9 @@ Guidance for Claude Code when working in this repository.
 A HACS custom integration (`custom_components/ctc_bms/`, domain **ctc_bms**) for
 CTC heat pumps over the BMS Modbus TCP protocol, plus its dev tooling in
 `dev/`. Grown out of a hardware-verification CLI (kept as
-`dev/ctc_modbus_test.py`) proven against a **CTC EcoLogic M** at
-`192.168.1.100:502`, MB address (device id) 1.
+`dev/ctc_modbus_test.py`) proven against a **CTC EcoLogic M** on port 502, MB
+address (device id) 1. The CLI takes `--host` or `$CTC_HOST` — the controller's
+address is site-specific and deliberately not recorded here.
 
 | Path | Role |
 |---|---|
@@ -124,9 +125,10 @@ count raw nonzeros). A 0 is a real reading (idle compressor).
   `ModbusDeviceContext`, and the fake server bases its data block at `BASE+1`
   to compensate pymodbus's legacy address+1 lookup — changing that shifts every
   simulated register by one.
-- Community integration (another community CTC integration) mislabels 62100 as
-  "heat pump status" (it's HP4's brine-out); real status is 62017. It also
-  invents float32 registers — the manual has none.
+- Don't cross-check register meanings against other community CTC integrations.
+  At least one labels 62100 "heat pump status" (it's HP4's brine-out; real
+  status is 62017) and defines float32 registers, of which the manual has none.
+  The manual and the hardware are the only sources worth trusting.
 
 ## Dev workflow
 
