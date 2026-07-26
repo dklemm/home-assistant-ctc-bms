@@ -118,8 +118,11 @@ def unit_for(name: str, desc: str, factor: float) -> str:
         return "days"
     if re.search(r"(pump|fan)$", n) or "percent" in d:
         return "%"
-    # NOT "flow": "Primary system flow" never says temperature (unlike "Primary
-    # flow temperature"), so it may be a flow rate - leave it unitless.
+    # "Primary system flow" is a flow *rate* in l/min - confirmed in the field.
+    # Match only "system flow": plain "Primary flow" (max/min/night reduction,
+    # "Primary flow temperature") is a temperature and must not be caught here.
+    if "system flow" in d or "systemflow" in n:
+        return "l/min"
     if factor == 0.1 and (
         "temp" in n or "temp" in d
         or re.search(r"\b(return|radiator|brine|gas|boiler)\b", d)

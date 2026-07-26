@@ -16,16 +16,25 @@ def s16(v: int) -> int:
 # A minimal live pump: one heat pump running, one zone, a negative temperature,
 # a "no sensor" sentinel and a 32-bit counter - the decode paths that matter.
 FAKE_REGISTERS: dict[int, int] = {
+    61500: 1,          # DHW mode = Normal (RW enum -> select entity)
     61501: s16(500),   # DHW manual stop temp = 50.0 C (RW -> number entity)
     61509: s16(215),   # Zone1 room setpoint = 21.5 C (RW -> number entity)
+    61521: 1,          # HP1 Blocked = 1 i.e. Allowed (RW bool -> switch, off)
+    61542: 0,          # Zone1 heating mode = Auto (RW enum -> select)
     61554: s16(50),    # Zone1 night reduction = 5.0 C (RW -> number entity)
     61572: s16(900),   # HP1 RPSMax = 90.0 (RW -> number entity)
+    61658: 1,          # Pool enable: RW, but read-only until the values are known
+    61671: 1,          # HC1 heating program = Normal (RW enum -> select)
     62000: s16(-53),   # outside temp = -5.3 C
     62017: 3,          # HP1 status = compressor on
     62027: s16(466),   # HP1 temp in = 46.6 C
     62186: 8,          # total operation LSB
     62187: 0,          # total operation MSB -> 8 h
+    62181: 0,          # Solar mode off (R bool -> binary_sensor)
     62203: 55536,      # Zone1 current room temp: no sensor fitted
+    62304: 1,          # RadiatorPump1 running (R bool -> binary_sensor)
+    62313: 1,          # HotWaterValve diverted to DHW (R -> valve, open)
+    62291: s16(132),   # HP1 primary system flow = 13.2 l/min
     62214: 12345,      # HP1 compressor time LSB
     62215: 0,          # HP1 compressor time MSB -> 12345 h
 }
@@ -37,6 +46,17 @@ def auto_enable_custom_integrations(enable_custom_integrations):
 
 
 @pytest.fixture
+def fake_registers() -> dict[int, int]:
+    """The register map behind mock_hub; mutate it before setting an entry up.
+
+    A fixture rather than an import: without tests/__init__.py, `from
+    tests.conftest import ...` gets a *second* copy of this module and the
+    mutation lands on a dict nobody reads.
+    """
+    return FAKE_REGISTERS
+
+
+@pytest.fixture
 def mock_hub():
     """Patch CtcHub's I/O so setup runs against FAKE_REGISTERS, no sockets.
 
@@ -44,6 +64,9 @@ def mock_hub():
     hardware reads 0), so reads return a word for everything asked.
     """
     writes: list[tuple[int, int]] = []
+    # Writes land in FAKE_REGISTERS so a read-back sees them; undo that
+    # afterwards so tests can't leak values into each other.
+    original = FAKE_REGISTERS.copy()
 
     async def fake_connect(self) -> None:
         return None
@@ -65,3 +88,5 @@ def mock_hub():
         patch.object(CtcHub, "async_write_register", fake_write),
     ):
         yield writes
+    FAKE_REGISTERS.clear()
+    FAKE_REGISTERS.update(original)

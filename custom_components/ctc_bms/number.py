@@ -24,7 +24,7 @@ async def async_setup_entry(
     async_add_entities(
         CtcNumber(coordinator, device_key, reg)
         for device_key, reg in coordinator.entity_registers()
-        if reg.access == "RW"
+        if coordinator.platform_for(device_key, reg) == "number"
     )
 
 

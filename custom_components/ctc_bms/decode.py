@@ -41,6 +41,32 @@ def is_sentinel(reg: Reg, words: list[int]) -> bool:
     return reg.count == 1 and words[0] in SENTINELS
 
 
+def is_present(regs: list[Reg], words: dict[int, int]) -> bool:
+    """Whether the hardware behind these registers looks fitted.
+
+    Every register answers whether or not the hardware exists (absent hardware
+    reads 0), so presence is decided by *real nonzero data* - and the
+    -9999/-10000 no-sensor sentinel is evidence of absence, not data. Requiring
+    two data registers keeps a single stray value from creating a device.
+
+    A hint, not a verdict: some subsystems (solar, pool, wood boiler) report
+    plausible-looking values on controllers that have none, which is why the
+    options flow lets the user override the result.
+    """
+    data = 0
+    for reg in regs:
+        if reg.access != "R":
+            continue
+        got = [words.get(reg.number + i) for i in range(reg.count)]
+        if any(w is None for w in got):
+            continue
+        if is_sentinel(reg, got):
+            continue
+        if any(got):
+            data += 1
+    return data >= 2
+
+
 def encode_value(reg: Reg, value: float) -> int:
     """Engineering value -> raw 16-bit word for an FC16 write.
 

@@ -127,7 +127,7 @@ HP_FIELDS = [
                "Heat pump 1 (A1) type"),
     ArrayField('CompressorModel', 62264, 1, 'S16', 1.0, '', 'R',
                "Heat pump 1 (A1) compressor model"),
-    ArrayField('PrimarySystemFlow', 62291, 1, 'S16', 0.1, '', 'R',
+    ArrayField('PrimarySystemFlow', 62291, 1, 'S16', 0.1, 'l/min', 'R',
                "Heat pump 1 (A1) Primary system flow"),
     ArrayField('PowerConsumption', 62331, 1, 'U16', 0.1, 'kW', 'R',
                "HP1 Power consumption kW"),

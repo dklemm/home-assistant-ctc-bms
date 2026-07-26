@@ -8,18 +8,28 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .coordinator import CtcCoordinator
 from .decode import decode_value, is_sentinel
+from .names import name_for
 from .registers import Reg
 
 
 def register_entity_name(device_key: str, reg: Reg) -> str:
     """A human name for a register, without the device prefix.
 
-    'HP1 DischargeGas' -> 'Discharge gas'; 'sOutsideTemp' -> 'Outside temp';
-    'hc1_heating_curve_point_1_x_value_outsid' -> 'Hc1 heating curve point ...'.
-    The device provides context (has_entity_name), so the HP1/Zone1 prefix goes.
+    Every register that ships as an entity is named by hand in names.py,
+    because the manual's Name column is shorthand and is blank on the rows the
+    generator has to slug from the description.
+
+    Deriving one from reg.name is the fallback for a register newly promoted to
+    an entity before it has been named: 'HP1 DischargeGas' -> 'Discharge gas',
+    'sOutsideTemp' -> 'Outside temp'. The device provides context
+    (has_entity_name), so the HP1/Zone1 prefix goes.
     """
+    if curated := name_for(reg):
+        return curated
     name = reg.name
-    if device_key != "System" and " " in name:
+    # Only the array maps prefix their names ('HP1 DischargeGas'); system
+    # registers keep theirs whichever device they end up grouped onto.
+    if device_key.startswith(("HP", "Zone")) and " " in name:
         name = name.split(" ", 1)[1]
     if name.startswith("s") and len(name) > 1 and name[1].isupper():
         name = name[1:]
@@ -27,6 +37,12 @@ def register_entity_name(device_key: str, reg: Reg) -> str:
         words = name.split("_")
     else:
         words = re.findall(r"[A-Z]+(?=[A-Z][a-z0-9]|\b)|[A-Z]?[a-z0-9]+", name)
+    # Sentence case, per HA's naming convention: lower-case the words that are
+    # merely capitalised and leave the rest ('RPS', 'SW', 'O2') alone.
+    words = [
+        w.lower() if i and len(w) > 1 and w[1:].islower() else w
+        for i, w in enumerate(words)
+    ]
     pretty = " ".join(words)
     return (pretty[0].upper() + pretty[1:]) if pretty else reg.name
 

@@ -9,6 +9,14 @@
           "port": "Port",
           "device_id": "Modbus device ID (MB address)"
         }
+      },
+      "model": {
+        "title": "Controller model",
+        "description": "The controller answers every register whether or not the hardware behind it exists, so which subsystems you have cannot be detected reliably. The model sets sensible defaults; tick anything optional you actually have fitted. You can change this later in the integration's options.",
+        "data": {
+          "model": "Model",
+          "subsystems": "Subsystems to create devices for"
+        }
       }
     },
     "error": {
@@ -26,11 +34,15 @@
           "scan_interval": "Poll interval (seconds)",
           "heat_pumps": "Heat pumps to create devices for",
           "zones": "Heating systems (zones) to create devices for",
+          "model": "Controller model",
+          "subsystems": "Subsystems to create devices for",
           "setpoints": "Create writable setpoint entities"
         },
         "data_description": {
           "heat_pumps": "Detection can miss hardware that is idle (e.g. compressors in summer read 0 everywhere); force-enable it here.",
-          "setpoints": "Number entities that write to the controller (FC16). Disable for a strictly read-only integration."
+          "model": "Only labels the controller device. Which subsystems exist is controlled below — changing the model here does not re-tick them.",
+          "subsystems": "A controller answers the solar, pool and wood-boiler registers whether or not that hardware is installed, so this cannot be detected. Untick anything you do not have: its device and entities disappear and its registers stop being polled.",
+          "setpoints": "Number and select entities that write to the controller (FC16). Disable for a strictly read-only integration."
         }
       }
     }

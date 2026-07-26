@@ -16,17 +16,33 @@ from homeassistant.helpers.update_coordinator import (
 )
 
 from .const import (
+    BINARY_SYSTEM,
     CONF_HEAT_PUMPS,
+    CONF_MODEL,
     CONF_SETPOINTS,
+    CONF_SUBSYSTEMS,
     CONF_ZONES,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    ENUM_HP_FIELDS,
+    ENUM_SYSTEM,
+    ENUM_ZONE_FIELDS,
     MANUFACTURER,
+    READ_ONLY_RW,
+    SELECT_HP_FIELDS,
+    SELECT_SYSTEM,
+    SELECT_ZONE_FIELDS,
     SETPOINT_HP_FIELDS,
     SETPOINT_SYSTEM,
     SETPOINT_ZONE_FIELDS,
+    SWITCH_HP_FIELDS,
+    SWITCH_SYSTEM,
+    SWITCH_ZONE_FIELDS,
+    VALVE_SYSTEM,
 )
+from .groups import SUBSYSTEMS, group_for
 from .hub import CtcConnectionError, CtcHub
+from .models import DEFAULT_MODEL, MODELS
 from .registers import (
     SYSTEM_REGISTERS,
     Reg,
@@ -74,19 +90,37 @@ class CtcCoordinator(DataUpdateCoordinator[dict[int, int]]):
             int(n) for n in _option(entry, CONF_ZONES, [1])
         )
         self.setpoints_enabled: bool = _option(entry, CONF_SETPOINTS, True)
+        self.model: str = _option(entry, CONF_MODEL, DEFAULT_MODEL)
+        # Entries created before subsystems existed have no stored list; keep
+        # every subsystem so an upgrade never silently removes entities.
+        self.subsystems: list[str] = [
+            key
+            for key in SUBSYSTEMS
+            if key in _option(entry, CONF_SUBSYSTEMS, list(SUBSYSTEMS))
+        ]
 
         # The map split into HA devices, restricted to the hardware that is
         # actually fitted (per config-flow detection / options override).
-        self.device_regs: dict[str, list[Reg]] = {
-            "System": sorted(SYSTEM_REGISTERS, key=lambda r: r.number)
-        }
+        self.device_regs: dict[str, list[Reg]] = {"System": []}
         for n in self.heat_pumps:
             self.device_regs[f"HP{n}"] = registers_for_hp(n)
         for n in self.zones:
             self.device_regs[f"Zone{n}"] = registers_for_zone(n)
+        for key in self.subsystems:
+            self.device_regs[key] = []
 
-        # Poll read-only registers plus the RW ones that become number
-        # entities; the ~180 other setpoints would only bloat the poll.
+        # Registers for hardware the user doesn't have - an unticked subsystem,
+        # a zone's heating curve - are dropped here, so they never reach an
+        # entity and never enter the poll.
+        for reg in SYSTEM_REGISTERS:
+            key = group_for(reg)
+            if key in self.device_regs:
+                self.device_regs[key].append(reg)
+        for regs in self.device_regs.values():
+            regs.sort(key=lambda r: r.number)
+
+        # Poll read-only registers plus the RW ones that become writable
+        # entities; the ~190 other setpoints would only bloat the poll.
         self._wanted: set[int] = set()
         for _key, reg in self.entity_registers():
             for i in range(reg.count):
@@ -94,30 +128,91 @@ class CtcCoordinator(DataUpdateCoordinator[dict[int, int]]):
 
     def entity_registers(self) -> list[tuple[str, Reg]]:
         """(device_key, Reg) for every register that becomes an entity."""
-        out: list[tuple[str, Reg]] = []
-        for key, regs in self.device_regs.items():
-            for reg in regs:
-                if reg.access == "R" or self._is_setpoint(key, reg):
-                    out.append((key, reg))
-        return out
+        return [
+            (key, reg)
+            for key, regs in self.device_regs.items()
+            for reg in regs
+            if self.platform_for(key, reg) is not None
+        ]
+
+    def platform_for(self, key: str, reg: Reg) -> str | None:
+        """Which HA platform this register becomes, or None for no entity.
+
+        The one gate on entity creation, and the reason a writable register can
+        never appear on two platforms. Read-only registers all become entities;
+        writable ones only if they are in a curated table, because a write goes
+        to a live heating system.
+        """
+        if reg.access == "R":
+            if reg.number in VALVE_SYSTEM:
+                return "valve"
+            if reg.number in BINARY_SYSTEM:
+                return "binary_sensor"
+            return "sensor"
+        # Writable, but only its value is trusted: readable regardless of the
+        # setpoints option, since nothing here can write.
+        if reg.number in READ_ONLY_RW:
+            return "sensor"
+        if not self.setpoints_enabled:
+            return None
+        if self.select_options(reg) is not None:
+            return "select"
+        if self.switch_values(reg) is not None:
+            return "switch"
+        if self._is_setpoint(key, reg):
+            return "number"
+        return None
+
+    # Which curated table applies is a property of the register's shape, not of
+    # the device it is shown on: a system register routed to a Zone device (the
+    # heating curves, the hcN programs) is still looked up by number.
+    def _lookup(self, reg: Reg, flat: dict, hp: dict, zone: dict):
+        if reg.device == "System":
+            return flat.get(reg.number)
+        field = reg.name.split(" ", 1)[1] if " " in reg.name else reg.name
+        table = hp if reg.device.startswith("HP") else zone
+        return table.get(field)
+
+    def select_options(self, reg: Reg) -> dict[int, str] | None:
+        """{raw value: option} for an enum register, None if it isn't one."""
+        if reg.access != "RW":
+            return None
+        return self._lookup(
+            reg, SELECT_SYSTEM, SELECT_HP_FIELDS, SELECT_ZONE_FIELDS
+        )
+
+    def enum_options(self, reg: Reg) -> dict[int, str] | None:
+        """{raw value: state} for a read-only register with a documented legend.
+
+        The read-only counterpart of select_options: a select would let you
+        write a status the pump computes for itself.
+        """
+        if reg.access != "R":
+            return None
+        return self._lookup(reg, ENUM_SYSTEM, ENUM_HP_FIELDS, ENUM_ZONE_FIELDS)
+
+    def switch_values(self, reg: Reg) -> tuple[int, int] | None:
+        """(on, off) raw values for a boolean register, None if it isn't one."""
+        if reg.access != "RW":
+            return None
+        return self._lookup(
+            reg, SWITCH_SYSTEM, SWITCH_HP_FIELDS, SWITCH_ZONE_FIELDS
+        )
 
     def _is_setpoint(self, key: str, reg: Reg) -> bool:
-        if not self.setpoints_enabled or reg.access != "RW":
+        if reg.access != "RW":
             return False
-        if key == "System":
-            return reg.number in SETPOINT_SYSTEM
-        field = reg.name.split(" ", 1)[1] if " " in reg.name else reg.name
-        if key.startswith("HP"):
-            return field in SETPOINT_HP_FIELDS
-        return field in SETPOINT_ZONE_FIELDS
+        return (
+            self._lookup(
+                reg, SETPOINT_SYSTEM, SETPOINT_HP_FIELDS, SETPOINT_ZONE_FIELDS
+            )
+            is not None
+        )
 
-    def setpoint_limits(self, key: str, reg: Reg):
-        if key == "System":
-            return SETPOINT_SYSTEM[reg.number]
-        field = reg.name.split(" ", 1)[1]
-        if key.startswith("HP"):
-            return SETPOINT_HP_FIELDS[field]
-        return SETPOINT_ZONE_FIELDS[field]
+    def setpoint_limits(self, key: str, reg: Reg) -> tuple[float, float, float]:
+        return self._lookup(
+            reg, SETPOINT_SYSTEM, SETPOINT_HP_FIELDS, SETPOINT_ZONE_FIELDS
+        )
 
     def device_info(self, key: str) -> DeviceInfo:
         entry_id = self.config_entry.entry_id
@@ -126,9 +221,11 @@ class CtcCoordinator(DataUpdateCoordinator[dict[int, int]]):
                 identifiers={(DOMAIN, f"{entry_id}_system")},
                 name="CTC Heat Pump System",
                 manufacturer=MANUFACTURER,
-                model="BMS controller",
+                model=MODELS[self.model].name,
             )
-        if key.startswith("HP"):
+        if key in SUBSYSTEMS:
+            name = SUBSYSTEMS[key]
+        elif key.startswith("HP"):
             name = f"CTC Heat Pump {key.removeprefix('HP')}"
         else:
             name = f"CTC Heating System {key.removeprefix('Zone')}"

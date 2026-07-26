@@ -9,17 +9,20 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import (
     EntityCategory,
+    UnitOfElectricCurrent,
     UnitOfEnergy,
     UnitOfPower,
     UnitOfPressure,
     UnitOfTemperature,
     UnitOfTime,
+    UnitOfVolumeFlowRate,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import CtcConfigEntry, CtcCoordinator
 from .entity import CtcEntity
+from .overrides import override_for
 from .registers import Reg
 
 # Register unit hint -> (HA unit, device_class, state_class). Units are
@@ -41,10 +44,25 @@ _UNIT_MAP: dict[str, tuple] = {
         SensorDeviceClass.POWER,
         SensorStateClass.MEASUREMENT,
     ),
+    "W": (
+        UnitOfPower.WATT,
+        SensorDeviceClass.POWER,
+        SensorStateClass.MEASUREMENT,
+    ),
+    "A": (
+        UnitOfElectricCurrent.AMPERE,
+        SensorDeviceClass.CURRENT,
+        SensorStateClass.MEASUREMENT,
+    ),
     "kWh": (
         UnitOfEnergy.KILO_WATT_HOUR,
         SensorDeviceClass.ENERGY,
         SensorStateClass.TOTAL_INCREASING,
+    ),
+    "l/min": (
+        UnitOfVolumeFlowRate.LITERS_PER_MINUTE,
+        SensorDeviceClass.VOLUME_FLOW_RATE,
+        SensorStateClass.MEASUREMENT,
     ),
     "h": (UnitOfTime.HOURS, None, SensorStateClass.TOTAL_INCREASING),
     "%": ("%", None, SensorStateClass.MEASUREMENT),
@@ -77,7 +95,7 @@ async def async_setup_entry(
     async_add_entities(
         CtcSensor(coordinator, device_key, reg)
         for device_key, reg in coordinator.entity_registers()
-        if reg.access == "R"
+        if coordinator.platform_for(device_key, reg) == "sensor"
     )
 
 
@@ -86,8 +104,21 @@ class CtcSensor(CtcEntity, SensorEntity):
         self, coordinator: CtcCoordinator, device_key: str, reg: Reg
     ) -> None:
         super().__init__(coordinator, device_key, reg)
+        override = override_for(reg.number)
+        self._factor = override.factor
+        self._attr_entity_registry_enabled_default = override.enabled_default
+        self._options = coordinator.enum_options(reg)
+        if self._options is not None:
+            # An enum sensor reports a state, not a measurement: HA requires no
+            # unit and no state class, and long-term statistics make no sense
+            # for one anyway.
+            self._attr_device_class = SensorDeviceClass.ENUM
+            self._attr_options = list(self._options.values())
+            self._set_entity_category(reg)
+            return
+        effective_unit = override.unit if override.unit is not None else reg.unit
         unit, device_class, state_class = _UNIT_MAP.get(
-            reg.unit, (reg.unit or None, None, None)
+            effective_unit, (effective_unit or None, None, None)
         )
         self._attr_native_unit_of_measurement = unit
         self._attr_device_class = device_class
@@ -100,10 +131,20 @@ class CtcSensor(CtcEntity, SensorEntity):
             self._attr_suggested_display_precision = 1
         elif reg.scale == 0.01:
             self._attr_suggested_display_precision = 2
+        self._set_entity_category(reg)
+
+    def _set_entity_category(self, reg: Reg) -> None:
         blob = f"{reg.name} {reg.desc}".lower()
         if any(k in blob for k in _DIAGNOSTIC_KEYWORDS):
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
-    def native_value(self) -> float | None:
-        return self.decoded_value()
+    def native_value(self) -> float | str | None:
+        value = self.decoded_value()
+        if value is None:
+            return None
+        if self._options is not None:
+            # Outside the documented legend: unknown beats an invented state,
+            # which HA would reject as not one of `options` anyway.
+            return self._options.get(int(value))
+        return round(value * self._factor, 4) if self._factor != 1.0 else value
