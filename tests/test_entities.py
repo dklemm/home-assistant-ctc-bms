@@ -434,6 +434,24 @@ async def test_boolean_statuses_are_binary_sensors(hass, mock_hub):
     assert entity_id(hass, entry, "sensor", 62323)
 
 
+async def test_dhw_circulation_pump_is_a_binary_sensor(hass, mock_hub):
+    """62016 is on/off, despite the '%' the generator infers from its name.
+
+    Its sibling 62323 is documented "DHWPump: 0-100" and this one is bare; the
+    field only ever shows 0 or 1. Reclassifying it drops the old sensor.
+    """
+    entry = await setup_entry(hass)
+    state = hass.states.get(entity_id(hass, entry, "binary_sensor", 62016))
+    assert state.state == "on"
+    assert state.attributes["device_class"] == "running"
+    assert "unit_of_measurement" not in state.attributes
+    registry = er.async_get(hass)
+    assert (
+        registry.async_get_entity_id("sensor", DOMAIN, f"{entry.entry_id}_62016")
+        is None
+    )
+
+
 async def test_undocumented_boolean_stays_read_only(hass, mock_hub):
     """Pool enable is RW, but nothing may write it until its values are known."""
     entry = await setup_entry(hass)

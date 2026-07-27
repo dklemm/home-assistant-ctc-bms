@@ -26,6 +26,7 @@ FAKE_REGISTERS: dict[int, int] = {
     61658: 1,          # Pool enable: RW, but read-only until the values are known
     61671: 1,          # HC1 heating program = Normal (RW enum -> select)
     62000: s16(-53),   # outside temp = -5.3 C
+    62016: 1,          # DHW circulation pump running (R bool -> binary_sensor)
     62017: 3,          # HP1 status = compressor on
     62027: s16(466),   # HP1 temp in = 46.6 C
     62186: 8,          # total operation LSB

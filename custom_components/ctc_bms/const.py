@@ -181,6 +181,11 @@ ENUM_ZONE_FIELDS: dict[str, dict[int, str]] = {
 # siblings ("DHWPump: 0-100") and leaves these bare. Registers whose value set
 # is merely assumed stay sensors - see the note below.
 BINARY_SYSTEM: dict[int, str | None] = {
+    # sDHWPump "DHW circulation" - bare where its sibling 62323 "DHWPump: 0-100"
+    # is annotated, and observed only ever 0 or 1 in the field. The "%" it
+    # carries in the generated map is inferred from the name ending in "pump"
+    # (gen_registers.py), not from the manual.
+    62016: "running",
     62181: "running",  # sunStatus, documented "0=Off, 1=On"
     62304: "running",  # RadiatorPump1
     62305: "running",  # RadiatorPump2
