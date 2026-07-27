@@ -1,3 +1,5 @@
+<img src="brands/ctc_bms/icon.png" alt="" width="96" align="right">
+
 # CTC Heat Pump (BMS) for Home Assistant
 
 A Home Assistant custom integration for **CTC heat pumps and controllers** that
@@ -137,6 +139,24 @@ answered with *silence* (not an error) — the integration bisects around them
 once and remembers. Issue reports with a diagnostics download (which includes a
 raw register snapshot) are welcome.
 
+## Brand icon
+
+Home Assistant does not serve images out of `custom_components/` — every
+integration icon in the UI is fetched from `brands.home-assistant.io` by domain,
+and HACS does the same. So [brands/ctc_bms/](brands/ctc_bms/) does nothing on its
+own: it is the payload for a PR to
+[home-assistant/brands](https://github.com/home-assistant/brands), where custom
+integrations go under `custom_integrations/ctc_bms/` as `icon.png` (256×256) and
+`icon@2x.png` (512×512). No `logo.png` — the mark is square and brands falls back
+to the icon. Until that PR is merged the integration shows HA's default
+placeholder; nothing else is affected.
+
+`icon.svg` is the only file to edit; re-render both PNGs from it with `cairosvg`
+(`svg2png(url=..., output_width=256/512)`). Not with macOS `qlmanage` — it pads
+the artwork into a thumbnail canvas, and brands' CI rejects the whitespace.
+
 ## License
 
-GPL-3.0 — see [LICENSE](LICENSE).
+GPL-3.0 — see [LICENSE](LICENSE). The CTC logo in [brands/](brands/) is CTC's
+trademark and is not covered by that licence; it is included solely to identify
+the hardware this integration talks to.
