@@ -23,9 +23,10 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
-          # Brand assets require a separate PR to home-assistant/brands, which
-          # only happens at (or after) HACS-default submission. Ignore that one
-          # check until then; everything else must pass.
+          # home-assistant/brands no longer accepts custom integrations (a bot
+          # auto-closes those PRs); since HA 2026.3.0 the icon ships in
+          # custom_components/ctc_bms/brand/ instead. So this check can never
+          # pass and stays ignored permanently. Everything else must pass.
           ignore: brands
 
   tests:

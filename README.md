@@ -1,4 +1,4 @@
-<img src="brands/ctc_bms/icon.png" alt="" width="96" align="right">
+<img src="custom_components/ctc_bms/brand/icon.png" alt="" width="96" align="right">
 
 # CTC Heat Pump (BMS) for Home Assistant
 
@@ -141,22 +141,28 @@ raw register snapshot) are welcome.
 
 ## Brand icon
 
-Home Assistant does not serve images out of `custom_components/` — every
-integration icon in the UI is fetched from `brands.home-assistant.io` by domain,
-and HACS does the same. So [brands/ctc_bms/](brands/ctc_bms/) does nothing on its
-own: it is the payload for a PR to
-[home-assistant/brands](https://github.com/home-assistant/brands), where custom
-integrations go under `custom_integrations/ctc_bms/` as `icon.png` (256×256) and
-`icon@2x.png` (512×512). No `logo.png` — the mark is square and brands falls back
-to the icon. Until that PR is merged the integration shows HA's default
-placeholder; nothing else is affected.
+The icon lives in [custom_components/ctc_bms/brand/](custom_components/ctc_bms/brand/)
+as `icon.png` (256×256) and `icon@2x.png` (512×512). Since **HA 2026.3.0** a
+custom integration serves its own brand images from that folder, and they take
+priority over `brands.home-assistant.io`. No `manifest.json` entry is needed, and
+no `logo.png` — the mark is square, and HA falls back to the icon wherever a logo
+would be used.
+
+Do *not* send these to [home-assistant/brands](https://github.com/home-assistant/brands):
+it stopped accepting custom integrations when 2026.3.0 landed, and a bot
+auto-closes such PRs. That also means the HACS action's `brands` check can never
+pass, which is why [validate.yml](.github/workflows/validate.yml) ignores it.
+
+On HA **older than 2026.3.0** there is now no way to supply an icon at all, so
+those installs show the default placeholder. Nothing else is affected.
 
 `icon.svg` is the only file to edit; re-render both PNGs from it with `cairosvg`
 (`svg2png(url=..., output_width=256/512)`). Not with macOS `qlmanage` — it pads
-the artwork into a thumbnail canvas, and brands' CI rejects the whitespace.
+the artwork into a thumbnail canvas, leaving whitespace around the mark.
 
 ## License
 
-GPL-3.0 — see [LICENSE](LICENSE). The CTC logo in [brands/](brands/) is CTC's
+GPL-3.0 — see [LICENSE](LICENSE). The CTC logo in
+[custom_components/ctc_bms/brand/](custom_components/ctc_bms/brand/) is CTC's
 trademark and is not covered by that licence; it is included solely to identify
 the hardware this integration talks to.
