@@ -32,6 +32,28 @@ PROBE_REGISTER = 62000
 # The manual caps a transfer at 100 registers.
 MAX_BLOCK = 100
 
+# ---------------------------------------------------------------------------
+# WARNING: writes wear the controller out.
+#
+# Every register in the tables below is one of the controller's *stored
+# parameters*, and the BMS manual is explicit about the cost of writing them:
+#
+#     "These parameters must not be changed a lot of times. If you do so you
+#     risk breaking the controller of the heat pump installation. There is a
+#     limit to the amount of write cycles!"
+#
+# So these entities are for settings a human changes, not for closed-loop
+# control. The manual's own answer for anything that must change often is the
+# 1000-range control registers, which are free of write-cycle cost, expire
+# after 5 minutes and are not implemented here yet. Adding a register to a
+# table below because an automation wants to drive it is the wrong fix.
+#
+# CtcEntity.async_write_raw is the single write path and drops a write that
+# would not change the register, so a repeating automation costs nothing while
+# its value is steady. That is a backstop, not a licence: an automation that
+# actually oscillates a value still writes every time it changes.
+# ---------------------------------------------------------------------------
+
 # Curated writable setpoints exposed as number entities, with conservative
 # (min, max, step) limits in engineering units. Deliberately small: a wrong
 # write to a heat pump is a real-world risk. Enum-like RW registers belong in

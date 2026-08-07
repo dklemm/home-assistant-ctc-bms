@@ -151,7 +151,36 @@ Release = bump `manifest.json` version → tag `vX.Y.Z` → GitHub release; HACS
 picks it up (installed as a custom repository). CI runs hassfest, HACS
 validation and pytest.
 
-## Writes are real
+## Writes are real — and they wear the controller out
+
+Every writable register we ship is a **stored parameter**, and the manual warns
+that those have a limited write-cycle count ("you risk breaking the controller
+of the heat pump installation"). So the writable entities are for settings a
+human changes, not for closed-loop control, and the manual's answer for
+anything that must change often is the **1000-range control registers** (`1002`
+max RPS, `1007` DHW mode, `1015-1018` zone modes, `1100` virtual digital inputs
+for SmartGrid) — no write-cycle cost, but write-only, reset on restart and
+**reset if not refreshed within 5 minutes**. Not implemented yet; they are also
+outside the parsed range (`parse_bms.py` bounds its rows to 60000-62999).
+
+The writable platforms are **off by default**: the config flow's `setpoints`
+step asks and defaults to False, and *stores* the answer. The fallback in
+`coordinator.py` and the options flow stays `True` on purpose — an entry
+predating that step has no stored value and must keep the entities it already
+created, the same rule the subsystem list follows. Don't "tidy" the two
+defaults into agreement; they answer different questions.
+
+Nothing writes except a service call: polling is read-only, and there is no
+write at setup, on reconnect, or on any schedule. **`CtcEntity.async_write_raw()`
+is the single write path** for all three writable platforms, and it drops a
+write whose raw word already matches the last poll — HA does not suppress a
+service call that matches current state (`switch.turn_on` on an already-on
+switch still reaches the entity), so without it a re-asserting automation would
+burn a cycle per run for ever. It compares **raw words, not engineering
+values**, which is what makes a number request that rounds to the stored word a
+no-op. The comparison can be one scan interval stale (change a setting at the
+controller's panel and a write of the value HA last saw is skipped until the
+next poll) — accepted, since the alternative is a read before every write.
 
 **`CtcCoordinator.platform_for()` is the only gate on entity creation**, and the
 reason a register can never appear on two platforms — every platform file filters

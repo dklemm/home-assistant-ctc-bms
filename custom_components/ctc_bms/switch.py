@@ -3,6 +3,13 @@
 Curated like the setpoints (SWITCH_* in const.py): these write to a live
 heating system, so only registers whose two values the manual documents are
 here.
+
+These write to the controller's stored parameters, which have a limited number
+of write cycles - see the warning on CtcEntity.async_write_raw, which is the
+write path and skips a write that would not change the register. A switch is
+the likeliest of the three to be driven on a timer ("block the heat pump when
+the price is high"), and the likeliest to be told to turn on when it is on
+already, which HA does not suppress.
 """
 
 from __future__ import annotations
@@ -11,13 +18,11 @@ from typing import Any
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import CtcConfigEntry, CtcCoordinator
 from .decode import encode_value
 from .entity import CtcEntity
-from .hub import CtcConnectionError
 from .registers import Reg
 
 
@@ -61,13 +66,4 @@ class CtcSwitch(CtcEntity, SwitchEntity):
         await self._write(self._off_value)
 
     async def _write(self, raw: int) -> None:
-        try:
-            await self.coordinator.hub.async_write_register(
-                self.reg.number, encode_value(self.reg, raw)
-            )
-        except CtcConnectionError as err:
-            raise HomeAssistantError(
-                f"Writing {self.reg.name} failed: {err}"
-            ) from err
-        # Read back so the UI shows what the pump actually accepted.
-        await self.coordinator.async_request_refresh()
+        await self.async_write_raw(encode_value(self.reg, raw))

@@ -164,10 +164,8 @@ class CtcBmsConfigFlow(ConfigFlow, domain=DOMAIN):
         has can be ticked here or later in the options.
         """
         if user_input is not None:
-            return self.async_create_entry(
-                title=f"CTC ({self._detected[CONF_HOST]})",
-                data={**self._detected, **user_input},
-            )
+            self._detected.update(user_input)
+            return await self.async_step_setpoints()
 
         schema = vol.Schema(
             {
@@ -196,6 +194,32 @@ class CtcBmsConfigFlow(ConfigFlow, domain=DOMAIN):
             }
         )
         return self.async_show_form(step_id="model", data_schema=schema)
+
+    async def async_step_setpoints(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Opt in to the writable entities, which default to off.
+
+        A step of its own rather than one more checkbox on the model step,
+        because the warning is the point: the registers behind these entities
+        are the controller's stored parameters and the manual limits how many
+        times they may be written (see the banner in const.py). Off by default
+        means an install has to make that choice deliberately.
+
+        The value is stored explicitly, so it is only new entries that start
+        read-only - an entry with no stored value keeps its writable entities,
+        the same rule the subsystem list follows.
+        """
+        if user_input is not None:
+            return self.async_create_entry(
+                title=f"CTC ({self._detected[CONF_HOST]})",
+                data={**self._detected, **user_input},
+            )
+
+        schema = vol.Schema(
+            {vol.Required(CONF_SETPOINTS, default=False): BooleanSelector()}
+        )
+        return self.async_show_form(step_id="setpoints", data_schema=schema)
 
     @staticmethod
     @callback
@@ -280,6 +304,8 @@ class CtcOptionsFlow(OptionsFlow):
                         mode=SelectSelectorMode.LIST,
                     )
                 ),
+                # Same fallback as the coordinator: an entry predating the
+                # setup step has no stored value and keeps what it has.
                 vol.Required(
                     CONF_SETPOINTS, default=current(CONF_SETPOINTS, True)
                 ): BooleanSelector(),

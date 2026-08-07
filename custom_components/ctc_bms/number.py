@@ -1,17 +1,20 @@
-"""Writable setpoints (a curated subset of the RW registers) as numbers."""
+"""Writable setpoints (a curated subset of the RW registers) as numbers.
+
+These write to the controller's stored parameters, which have a limited number
+of write cycles - see the warning on CtcEntity.async_write_raw, which is the
+write path and skips a write that would not change the register.
+"""
 
 from __future__ import annotations
 
 from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import CtcConfigEntry, CtcCoordinator
 from .decode import encode_value
 from .entity import CtcEntity
-from .hub import CtcConnectionError
 from .registers import Reg
 
 
@@ -49,14 +52,4 @@ class CtcNumber(CtcEntity, NumberEntity):
         return self.decoded_value()
 
     async def async_set_native_value(self, value: float) -> None:
-        try:
-            await self.coordinator.hub.async_write_register(
-                self.reg.number, encode_value(self.reg, value)
-            )
-        except CtcConnectionError as err:
-            raise HomeAssistantError(
-                f"Writing {self.reg.name} failed: {err}"
-            ) from err
-        # Read back so the UI shows what the pump actually accepted (it may
-        # clamp the value).
-        await self.coordinator.async_request_refresh()
+        await self.async_write_raw(encode_value(self.reg, value))

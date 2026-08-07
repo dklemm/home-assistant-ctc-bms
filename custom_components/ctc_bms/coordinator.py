@@ -89,6 +89,11 @@ class CtcCoordinator(DataUpdateCoordinator[dict[int, int]]):
         self.zones: list[int] = sorted(
             int(n) for n in _option(entry, CONF_ZONES, [1])
         )
+        # New entries store this explicitly and the config flow defaults it to
+        # off (writes wear the controller's stored parameters out - see the
+        # banner in const.py). The fallback here stays True on purpose: an
+        # entry created before that step existed has no stored value, and an
+        # upgrade must not silently remove entities it already created.
         self.setpoints_enabled: bool = _option(entry, CONF_SETPOINTS, True)
         self.model: str = _option(entry, CONF_MODEL, DEFAULT_MODEL)
         # Entries created before subsystems existed have no stored list; keep

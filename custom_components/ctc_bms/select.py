@@ -3,19 +3,21 @@
 A curated subset, same rationale as number.py: only registers whose full value
 set the manual documents (SELECT_SYSTEM in const.py) are exposed, because these
 write to a live heating system.
+
+These write to the controller's stored parameters, which have a limited number
+of write cycles - see the warning on CtcEntity.async_write_raw, which is the
+write path and skips a write that would not change the register.
 """
 
 from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import CtcConfigEntry, CtcCoordinator
 from .decode import encode_value
 from .entity import CtcEntity
-from .hub import CtcConnectionError
 from .registers import Reg
 
 
@@ -55,13 +57,4 @@ class CtcSelect(CtcEntity, SelectEntity):
         return self._options.get(int(value))
 
     async def async_select_option(self, option: str) -> None:
-        try:
-            await self.coordinator.hub.async_write_register(
-                self.reg.number, encode_value(self.reg, self._values[option])
-            )
-        except CtcConnectionError as err:
-            raise HomeAssistantError(
-                f"Writing {self.reg.name} failed: {err}"
-            ) from err
-        # Read back so the UI shows what the pump actually accepted.
-        await self.coordinator.async_request_refresh()
+        await self.async_write_raw(encode_value(self.reg, self._values[option]))

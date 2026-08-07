@@ -17,6 +17,16 @@
           "model": "Model",
           "subsystems": "Subsystems to create devices for"
         }
+      },
+      "setpoints": {
+        "title": "Writable entities (optional)",
+        "description": "The integration is read-only unless you tick this.\n\n⚠️ Writable entities change the controller's **stored parameters**, and CTC's BMS manual warns: *\"These parameters must not be changed a lot of times. If you do so you risk breaking the controller of the heat pump installation. There is a limit to the amount of write cycles!\"*\n\nThat is fine for settings you change by hand now and then — room temperature, hot water mode, blocking a heat pump. It is **not** safe to drive them from an automation on a timer or an electricity price signal: at one write every 15 minutes you would reach the controller's likely write-cycle limit within a few years.\n\nYou can change this later in the integration's options.",
+        "data": {
+          "setpoints": "Create writable entities (numbers, selects, switches)"
+        },
+        "data_description": {
+          "setpoints": "A curated set: room temperature setpoints, night reduction, hot water stop temperature and mode, compressor max RPS, heating modes and programs, and blocking a heat pump."
+        }
       }
     },
     "error": {
@@ -36,13 +46,13 @@
           "zones": "Heating systems (zones) to create devices for",
           "model": "Controller model",
           "subsystems": "Subsystems to create devices for",
-          "setpoints": "Create writable setpoint entities"
+          "setpoints": "Create writable entities"
         },
         "data_description": {
           "heat_pumps": "Detection can miss hardware that is idle (e.g. compressors in summer read 0 everywhere); force-enable it here.",
           "model": "Only labels the controller device. Which subsystems exist is controlled below — changing the model here does not re-tick them.",
           "subsystems": "A controller answers the solar, pool and wood-boiler registers whether or not that hardware is installed, so this cannot be detected. Untick anything you do not have: its device and entities disappear and its registers stop being polled.",
-          "setpoints": "Number and select entities that write to the controller (FC16). Disable for a strictly read-only integration."
+          "setpoints": "⚠️ These write to the controller's stored parameters, which have a limited number of write cycles — CTC warns that changing them too often risks breaking the controller. Safe to change by hand; do not drive them from an automation on a timer or a price signal. Untick for a strictly read-only integration."
         }
       }
     }

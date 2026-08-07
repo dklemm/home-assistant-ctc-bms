@@ -27,12 +27,15 @@ It talks pymodbus directly — no YAML `modbus:` platform, no templates:
 - **Fast, gentle polling**: registers are read in ≤100-register blocks (one
   block costs the same ~10 ms as one register), one request outstanding at a
   time (the controller cannot pipeline), default every 30 s.
-- **Writable setpoints, selects and switches**: a curated set of RW registers
-  (room temperature setpoints, night reduction, DHW stop temperature, compressor
-  max RPS, heating and hot water modes, blocking a heat pump) written with FC16.
-  Deliberately small — the write goes to a live heating system, so a register
-  only becomes writable if the manual documents its limits or its complete value
-  set. Can be disabled entirely in Options for a read-only integration.
+- **Writable setpoints, selects and switches — off by default**: a curated set
+  of RW registers (room temperature setpoints, night reduction, DHW stop
+  temperature, compressor max RPS, heating and hot water modes, blocking a heat
+  pump) written with FC16. Deliberately small — the write goes to a live heating
+  system, so a register only becomes writable if the manual documents its limits
+  or its complete value set. Setup asks whether to create them and defaults to
+  *no*; read
+  [Do not automate the writable entities](#do-not-automate-the-writable-entities)
+  before you tick it.
 - **The right entity type**: documented states become enum sensors reporting
   "Compressor on, heating" rather than `3`; the two-position diverter valves
   become valves; pump on/off outputs become binary sensors.
@@ -51,6 +54,9 @@ The register map (554 registers) is generated from CTC's official BMS manual
 4. Enter the controller's IP, port 502, MB address (device ID) 1 — these are on
    the controller's *Settings → Communication* screen, where Modbus TCP must be
    enabled.
+5. Confirm the model, then choose whether to create writable entities. This
+   **defaults to off** and the integration is read-only until you turn it on —
+   see the warning below.
 
 Manual install: copy `custom_components/ctc_bms/` into your HA `config/custom_components/`.
 
@@ -63,6 +69,49 @@ Settings → Devices & Services → CTC Heat Pump (BMS) → **Configure**:
 - Controller model, and which subsystems get devices (pre-filled from the
   model; unticking one removes its device and stops polling its registers)
 - Whether writable entities are created
+
+## ⚠️ Do not automate the writable entities
+
+They are **off by default** — setup asks, and the answer is no unless you change
+it, so a fresh install is read-only. Existing installs keep whatever they
+already had; upgrading never removes entities.
+
+**The numbers, selects and switches write to the controller's stored
+parameters, and those have a limited number of write cycles.** CTC's BMS manual
+puts it plainly:
+
+> These parameters must not be changed a lot of times. If you do so you risk
+> breaking the controller of the heat pump installation. There is a limit to
+> the amount of write cycles!
+
+They are safe to change the way a person changes a setting — by hand, from the
+dashboard, now and then. They are **not** safe as the output of a control loop.
+The tempting automations are exactly the dangerous ones:
+
+- blocking a heat pump on an electricity price signal,
+- nudging a room setpoint every few minutes from solar production,
+- a script that re-asserts "the right" mode on a timer.
+
+At one write every 15 minutes that is ~35,000 write cycles a year; once a
+minute is half a million. Typical EEPROM endurance is around 100,000.
+
+Two things reduce the risk, neither of which makes automation safe:
+
+- The integration **never writes on its own**. Polling is read-only; nothing is
+  written at setup, on reconnect, or on a schedule. Every write is caused by a
+  service call.
+- A write that would not change the register is **dropped** — Home Assistant
+  does not suppress `switch.turn_on` on an already-on switch, so an automation
+  that re-asserts a steady value costs nothing. An automation whose value
+  actually moves still writes every time it moves.
+
+If you need frequent control, the manual's answer is the **1000-range control
+registers** (`Max RPS`, zone modes, DHW mode, SmartGrid via virtual digital
+inputs). They carry no write-cycle cost, but expire after 5 minutes unless
+refreshed — and this integration does not implement them yet.
+
+*"Create writable entities"* in Options turns them on or off at any time;
+leaving it off removes the risk entirely.
 
 ## Development
 

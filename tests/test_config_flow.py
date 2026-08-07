@@ -17,6 +17,7 @@ from custom_components.ctc_bms.const import (
     CONF_DEVICE_ID,
     CONF_HEAT_PUMPS,
     CONF_MODEL,
+    CONF_SETPOINTS,
     CONF_SUBSYSTEMS,
     CONF_ZONES,
     DOMAIN,
@@ -52,12 +53,53 @@ async def test_user_flow_creates_entry(hass):
             result["flow_id"],
             {CONF_MODEL: "ecologic_m", CONF_SUBSYSTEMS: ["DHW", "AddHeat"]},
         )
+        # Third step: opting in to the writable entities.
+        assert result["type"] is FlowResultType.FORM
+        assert result["step_id"] == "setpoints"
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_SETPOINTS: True}
+        )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "CTC (1.2.3.4)"
     assert result["data"][CONF_HEAT_PUMPS] == [1]
     assert result["data"][CONF_ZONES] == [1, 2]
     assert result["data"][CONF_MODEL] == "ecologic_m"
     assert result["data"][CONF_SUBSYSTEMS] == ["DHW", "AddHeat"]
+    assert result["data"][CONF_SETPOINTS] is True
+
+
+async def test_writable_entities_are_off_by_default(hass):
+    """Writes wear the controller's stored parameters out, so opting in is
+    deliberate - and the choice is stored, not left to fall back."""
+    with (
+        patch(
+            "custom_components.ctc_bms.config_flow._probe_and_detect",
+            return_value=([1], [1], 14),
+        ),
+        patch(
+            "custom_components.ctc_bms.async_setup_entry", return_value=True
+        ),
+    ):
+        result = await hass.config_entries.flow.async_init(
+            DOMAIN, context={"source": config_entries.SOURCE_USER}
+        )
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], USER_INPUT
+        )
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_MODEL: "ecologic_m", CONF_SUBSYSTEMS: ["DHW"]},
+        )
+        assert result["step_id"] == "setpoints"
+        defaults = {
+            key.schema: key.default() for key in result["data_schema"].schema
+        }
+        assert defaults[CONF_SETPOINTS] is False
+
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_SETPOINTS: False}
+        )
+    assert result["data"][CONF_SETPOINTS] is False
 
 
 async def test_model_step_defaults_come_from_product_type(hass):

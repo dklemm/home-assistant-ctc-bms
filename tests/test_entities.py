@@ -394,6 +394,72 @@ async def test_hp_blocked_switch_keeps_the_register_polarity(hass, mock_hub):
     assert hass.states.get(eid).state == "on"
 
 
+async def test_write_is_skipped_when_the_register_already_matches(
+    hass, mock_hub
+):
+    """The controller's parameters have a limited write-cycle count, so a
+    write that would not change the register never reaches the hub.
+
+    HA does not suppress a service call matching current state, so without this
+    an automation re-asserting a steady value would burn a cycle every run.
+    """
+    entry = await setup_entry(hass)
+
+    # 61501 already reads 50.0, 61500 already reads Normal, 61521 already
+    # reads 1 = Allowed i.e. the switch is off.
+    await hass.services.async_call(
+        "number",
+        "set_value",
+        {"entity_id": entity_id(hass, entry, "number", 61501), "value": 50.0},
+        blocking=True,
+    )
+    await hass.services.async_call(
+        "select",
+        "select_option",
+        {"entity_id": entity_id(hass, entry, "select", 61500), "option": "Normal"},
+        blocking=True,
+    )
+    await hass.services.async_call(
+        "switch",
+        "turn_off",
+        {"entity_id": entity_id(hass, entry, "switch", 61521)},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+    assert mock_hub == []
+
+
+async def test_write_below_the_register_step_is_not_a_write(hass, mock_hub):
+    """Raw words are compared, not engineering values: 50.02 C encodes to the
+    word 61501 already holds (scale 0.1), so there is nothing to write."""
+    entry = await setup_entry(hass)
+    eid = entity_id(hass, entry, "number", 61501)
+    await hass.services.async_call(
+        "number", "set_value", {"entity_id": eid, "value": 50.02}, blocking=True
+    )
+    await hass.async_block_till_done()
+    assert mock_hub == []
+    assert float(hass.states.get(eid).state) == 50.0
+
+
+async def test_a_real_change_still_writes_every_time(hass, mock_hub):
+    """The guard drops no-ops only - it must not swallow an actual change.
+
+    A -> B -> A back to back is the case that catches a guard comparing
+    against the coordinator alone: the read-back refresh is debounced, so all
+    three writes see pre-write data and the last one looks like a no-op while
+    the register actually holds B.
+    """
+    entry = await setup_entry(hass)
+    eid = entity_id(hass, entry, "number", 61501)
+    for value in (55.0, 50.0, 55.0):
+        await hass.services.async_call(
+            "number", "set_value", {"entity_id": eid, "value": value}, blocking=True
+        )
+        await hass.async_block_till_done()
+    assert mock_hub == [(61501, 550), (61501, 500), (61501, 550)]
+
+
 async def test_switch_reports_unknown_for_an_undocumented_value(
     hass, mock_hub, fake_registers
 ):
@@ -522,3 +588,20 @@ async def test_setpoints_can_be_disabled(hass, mock_hub):
         is None
     )
     assert 61500 not in entry.runtime_data._wanted
+
+
+async def test_an_entry_with_no_stored_choice_keeps_its_writable_entities(
+    hass, mock_hub
+):
+    """New entries default to read-only, but upgrading must not remove
+    entities an existing install already has.
+
+    setup_entry() stores no 'setpoints' key, exactly like an entry created
+    before the setup step existed - so the fallback has to stay True even
+    though the config flow now defaults the choice to False.
+    """
+    entry = await setup_entry(hass)
+    assert entry.runtime_data.setpoints_enabled is True
+    assert entity_id(hass, entry, "number", 61501)
+    assert entity_id(hass, entry, "select", 61500)
+    assert entity_id(hass, entry, "switch", 61521)
