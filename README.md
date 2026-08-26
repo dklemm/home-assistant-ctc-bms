@@ -7,7 +7,8 @@ speak the CTC **BMS Modbus TCP** protocol (EcoLogic M, and other current CTC
 controllers exposing the 6xxxx register map). Developed and verified against a
 CTC EcoLogic M.
 
-It talks pymodbus directly — no YAML `modbus:` platform, no templates:
+It speaks Modbus TCP itself, through `modbus-connection` — no YAML `modbus:`
+platform, no templates:
 
 - **UI config flow**: host, port, Modbus device ID; connection is verified
   against a register that is guaranteed to exist.

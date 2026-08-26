@@ -5,6 +5,13 @@ Pure functions, no I/O; shared by entities, config flow and tests.
 
 from __future__ import annotations
 
+from modbus_connection.decode import (
+    decode_int16,
+    decode_int32,
+    decode_uint16,
+    decode_uint32,
+)
+
 from .overrides import override_for
 from .registers import Reg
 
@@ -13,23 +20,17 @@ from .registers import Reg
 SENTINELS = {55536, 55537}  # -10000, -9999
 
 
-def to_signed16(raw: int) -> int:
-    return raw - 0x10000 if raw >= 0x8000 else raw
-
-
 def decode_value(reg: Reg, words: list[int]) -> float:
     """Raw register words -> scaled engineering value.
 
-    32-bit values are stored LSB first, MSB second (value = MSB << 16 | LSB),
-    which is little-endian word order - the opposite of the usual Modbus
-    convention, so don't "fix" this to big-endian.
+    32-bit values are stored LSB first, MSB second - little-endian word order,
+    the opposite of the usual Modbus convention, so don't "fix" this to "big".
     """
     if reg.count == 2:
-        val = (words[1] << 16) | words[0]
-        if reg.dtype == "S32" and val >= 0x80000000:
-            val -= 0x100000000
+        decode = decode_int32 if reg.dtype == "S32" else decode_uint32
+        val = decode(words, word_order="little")
     else:
-        val = to_signed16(words[0]) if reg.dtype == "S16" else words[0]
+        val = decode_int16(words) if reg.dtype == "S16" else decode_uint16(words)
     if reg.scale == 1:
         return val  # statuses/counters stay ints ("3", not "3.0")
     # Round away binary-float noise (-53 * 0.1 = -5.300000000000001); the

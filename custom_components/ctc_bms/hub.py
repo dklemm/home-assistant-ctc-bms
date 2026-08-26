@@ -3,8 +3,6 @@
 Async port of the batching reader proven in dev/ctc_modbus_test.py, plus the
 behaviours a long-running integration needs:
 
-- One outstanding request at a time (asyncio.Lock): the controller stops
-  answering entirely if requests are pipelined. Reads and writes share the lock.
 - Reading a nonexistent register returns *silence*, not an exception, so it is
   indistinguishable from a dead link and costs a full timeout. Wanted addresses
   are therefore grouped into <=100-register block reads (a block costs the same
@@ -16,19 +14,27 @@ behaviours a long-running integration needs:
   bisection storm of timeouts every poll.
 - A dead-address cache: addresses bisection proves absent are excluded from
   subsequent polls, so a map/firmware mismatch costs timeouts once, not forever.
+
+The transport is modbus-connection over pymodbus, which serializes requests
+over the link - the controller stops answering entirely if they are pipelined,
+so nothing here may issue two at once. Only two errors mean "absent address":
+silence (ModbusTimeoutError), which is what the CTC does, and exception code 2
+(IllegalDataAddressError), which is what a device that answers politely does.
+Every other ModbusError is a link or device failure and must not feed the
+bisection, or one blip would cache live registers as dead for ever.
 """
 
 from __future__ import annotations
 
-import asyncio
-import logging
-
-from pymodbus.client import AsyncModbusTcpClient
-from pymodbus.exceptions import ModbusException
+from modbus_connection import (
+    IllegalDataAddressError,
+    ModbusError,
+    ModbusTcpParams,
+    ModbusTimeoutError,
+)
+from modbus_connection.pymodbus import ModbusConnection
 
 from .const import MAX_BLOCK, PROBE_REGISTER
-
-_LOGGER = logging.getLogger(__name__)
 
 
 class CtcConnectionError(Exception):
@@ -36,7 +42,7 @@ class CtcConnectionError(Exception):
 
 
 class CtcHub:
-    """Owns the Modbus client; all controller I/O goes through here."""
+    """Owns the Modbus connection; all controller I/O goes through here."""
 
     def __init__(
         self,
@@ -48,38 +54,43 @@ class CtcHub:
         self.host = host
         self.port = port
         self.device_id = device_id
-        # retries=1: pymodbus defaults to 3, which triples the cost of every
-        # absent address (each retry is a full timeout of silence).
-        self._client = AsyncModbusTcpClient(
-            host, port=port, timeout=timeout, retries=1
+        # Constructing a connection performs no I/O; the first read opens the
+        # link, and a later one re-opens it if it drops. The backend sets
+        # retries=0, so an absent address costs exactly one timeout.
+        self._connection = ModbusConnection(
+            ModbusTcpParams(host=host, port=port), timeout=timeout
         )
-        self._lock = asyncio.Lock()
+        self._unit = self._connection.for_unit(device_id)
         self.dead_addresses: set[int] = set()
 
-    async def async_connect(self) -> None:
-        if not await self._client.connect():
-            raise CtcConnectionError(
-                f"Could not connect to {self.host}:{self.port}"
-            )
-
-    def close(self) -> None:
-        self._client.close()
+    async def async_close(self) -> None:
+        await self._connection.close()
 
     async def _read_block(self, address: int, count: int) -> list[int] | None:
-        """One FC03 transaction. None = silence (absent address or dead link)."""
-        async with self._lock:
-            try:
-                rr = await self._client.read_holding_registers(
-                    address, count=count, device_id=self.device_id
-                )
-            except ModbusException:
-                return None
-            if rr.isError():
-                return None
-            return rr.registers
+        """One FC03 transaction. None = the block holds an absent address.
+
+        The CTC answers one with silence (ModbusTimeoutError). A device that is
+        more polite - the simulator, another controller's firmware - says so
+        with exception code 2 instead; same meaning, same handling.
+
+        Everything else raises: a dropped link, a closed connection, a busy or
+        failed device is not an absent address, and bisecting one would cache
+        live addresses as dead for ever.
+        """
+        try:
+            return await self._unit.read_holding_registers(address, count)
+        except (ModbusTimeoutError, IllegalDataAddressError):
+            return None
+        except ModbusError as err:
+            # The library's message already names the call and the endpoint.
+            raise CtcConnectionError(str(err)) from err
 
     async def async_probe(self) -> None:
-        """One read of a register that exists on every CTC controller."""
+        """One read of a register that exists on every CTC controller.
+
+        Doubles as the connect: the read opens the link, so a host that refuses
+        the socket and a device id that answers nothing both surface here.
+        """
         if await self._read_block(PROBE_REGISTER, 1) is None:
             raise CtcConnectionError(
                 f"No response from {self.host}:{self.port} "
@@ -153,16 +164,8 @@ class CtcHub:
 
     async def async_write_register(self, address: int, value: int) -> None:
         """Write one holding register with FC16, per the BMS manual."""
-        async with self._lock:
-            try:
-                rr = await self._client.write_registers(
-                    address, [value], device_id=self.device_id
-                )
-            except ModbusException as err:
-                raise CtcConnectionError(
-                    f"Write to register {address} failed: {err}"
-                ) from err
-        if rr.isError():
-            raise CtcConnectionError(
-                f"Controller rejected write to register {address}"
-            )
+        try:
+            await self._unit.write_registers(address, [value])
+        except ModbusError as err:
+            # Includes the controller's refusal code when it rejected the value.
+            raise CtcConnectionError(f"Write to {address} failed: {err}") from err

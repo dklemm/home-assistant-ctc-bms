@@ -32,10 +32,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: CtcConfigEntry) -> bool:
         entry.data.get(CONF_DEVICE_ID, DEFAULT_DEVICE_ID),
     )
     try:
-        await hub.async_connect()
         await hub.async_probe()
     except CtcConnectionError as err:
-        hub.close()
+        await hub.async_close()
         raise ConfigEntryNotReady(str(err)) from err
 
     coordinator = CtcCoordinator(hass, entry, hub)
@@ -87,5 +86,5 @@ async def _async_options_updated(
 async def async_unload_entry(hass: HomeAssistant, entry: CtcConfigEntry) -> bool:
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unloaded:
-        entry.runtime_data.hub.close()
+        await entry.runtime_data.hub.async_close()
     return unloaded

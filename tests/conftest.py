@@ -74,9 +74,6 @@ def mock_hub():
     # afterwards so tests can't leak values into each other.
     original = FAKE_REGISTERS.copy()
 
-    async def fake_connect(self) -> None:
-        return None
-
     async def fake_probe(self) -> None:
         return None
 
@@ -88,7 +85,6 @@ def mock_hub():
         FAKE_REGISTERS[address] = value
 
     with (
-        patch.object(CtcHub, "async_connect", fake_connect),
         patch.object(CtcHub, "async_probe", fake_probe),
         patch.object(CtcHub, "async_read_addresses", fake_read),
         patch.object(CtcHub, "async_write_register", fake_write),

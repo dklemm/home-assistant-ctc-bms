@@ -2,5 +2,6 @@
 # homeassistant version it tests against - keep it current with the HA release
 # you develop on.
 pytest-homeassistant-custom-component
-pymodbus>=3.13,<4
+modbus-connection[pymodbus]>=4.10,<5
+pymodbus>=3.13,<4  # dev/fake_ctc_server.py (a server) and dev/ctc_modbus_test.py
 pypdf  # only for dev/scripts/parse_bms.py (PDF -> bms_registers.json)

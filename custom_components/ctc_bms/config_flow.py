@@ -76,7 +76,6 @@ async def _probe_and_detect(
     """
     hub = CtcHub(host, port, device_id)
     try:
-        await hub.async_connect()
         await hub.async_probe()
         wanted: set[int] = set()
 
@@ -92,7 +91,7 @@ async def _probe_and_detect(
         wanted.add(REG_PRODUCT_TYPE)
         words = await hub.async_read_addresses(wanted)
     finally:
-        hub.close()
+        await hub.async_close()
 
     heat_pumps = [
         n

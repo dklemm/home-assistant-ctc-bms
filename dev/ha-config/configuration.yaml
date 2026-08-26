@@ -8,4 +8,5 @@ logger:
   logs:
     custom_components.ctc_bms: debug
     # raise to debug to see individual Modbus transactions on the wire
+    modbus_connection: info
     pymodbus: info

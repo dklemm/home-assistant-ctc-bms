@@ -6,7 +6,6 @@ from custom_components.ctc_bms.decode import (
     encode_value,
     is_present,
     is_sentinel,
-    to_signed16,
 )
 from custom_components.ctc_bms.registers import Reg
 
@@ -15,14 +14,9 @@ U32 = Reg(62186, "sTotalTime", "", "U32", 1.0, "h", "R", "System")
 S32 = Reg(62186, "x", "", "S32", 1.0, "h", "R", "System")
 
 
-def test_signed16():
-    assert to_signed16(0x0001) == 1
-    assert to_signed16(0xFFFF) == -1
-    assert to_signed16(0x8000) == -32768
-
-
 def test_negative_temperature():
     assert decode_value(TEMP, [0xFFCB]) == -5.3
+    assert decode_value(TEMP, [0x8000]) == -3276.8
 
 
 def test_32bit_is_lsb_first():

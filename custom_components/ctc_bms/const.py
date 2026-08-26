@@ -17,10 +17,9 @@ CONF_SETPOINTS = "setpoints"
 CONF_SUBSYSTEMS = "subsystems"
 CONF_MODEL = "model"
 
-# Identity registers. The controller reports its own model here; sSystemType is
+# The controller reports its own model here. Not 62207 sSystemType - that is
 # the hydraulic layout configured in its menus, not the model.
 REG_PRODUCT_TYPE = 62253
-REG_SYSTEM_TYPE = 62207
 
 MANUFACTURER = "CTC"
 

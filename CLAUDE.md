@@ -15,7 +15,7 @@ address is site-specific and deliberately not recorded here.
 |---|---|
 | `custom_components/ctc_bms/registers.py` | **generated** register map — never hand-edit |
 | `custom_components/ctc_bms/decode.py` | pure decode/encode + sentinel logic |
-| `custom_components/ctc_bms/hub.py` | all Modbus I/O: lock, block reads, bisection, outage probe, dead cache |
+| `custom_components/ctc_bms/hub.py` | all Modbus I/O: block reads, bisection, outage probe, dead cache |
 | `custom_components/ctc_bms/coordinator.py` | poll set, device split, options handling |
 | `custom_components/ctc_bms/groups.py` | hand-written: which HA device each system register lands on |
 | `custom_components/ctc_bms/models.py` | hand-written: controller model → default subsystems |
@@ -137,15 +137,38 @@ unique_id, so shuffling names only moves the lie to a different install.
   address before the network.
 - **One absent address kills the whole block read** → bisect, cache dead
   addresses (`hub.dead_addresses`).
-- **The controller cannot pipeline** — one outstanding request, ever
-  (`hub._lock` covers reads *and* writes).
+- **The controller serves one Modbus TCP client at a time**, and a second one
+  fails in a way that looks like a broken client, not a busy pump: the TCP
+  handshake is *accepted*, then the controller sends RST on the first PDU. A
+  plain `socket.create_connection()` therefore succeeds while pymodbus reports
+  "could not connect" in ~0.1 s, which reads exactly like a bad address or a
+  regression in whatever changed last. Before debugging the client, stop
+  everything else that polls the pump — the production HA is the usual culprit.
+  `cannot_connect` in the config flow already says so; believe it.
+- **The controller cannot pipeline** — one outstanding request, ever. The
+  `ModbusConnection` serializes every request over the link, reads and writes
+  alike, so `hub.py` needs no lock of its own. Don't add code that talks to the
+  controller outside it.
 - **32-bit values are LSB first, MSB second** (`MSB << 16 | LSB`) — deliberate
   anti-convention; don't "fix" to big-endian.
-- pymodbus ≥3.13: kwarg is **`device_id=`** (not `slave=`/`unit=`);
-  `retries=1` (default 3 triples every dead-address timeout). Server side:
-  `ModbusDeviceContext`, and the fake server bases its data block at `BASE+1`
-  to compensate pymodbus's legacy address+1 lookup — changing that shifts every
-  simulated register by one.
+- The integration talks **`modbus-connection[pymodbus]`**, not pymodbus:
+  `ModbusConnection(ModbusTcpParams(...))` → `for_unit(device_id)` →
+  `read_holding_registers(address, count) -> list[int]`. It owns the device id
+  and sets `retries=0`, so a dead address costs exactly one timeout, and the
+  first request opens the link (there is no connect step — `async_probe()` is
+  it). **Only `ModbusTimeoutError` (the CTC's silence) and
+  `IllegalDataAddressError` (exception code 2, what the fake server and a
+  politer firmware answer with) mean "absent address"**; every other
+  `ModbusError` is a link or device failure and raises. Don't re-collapse the
+  two groups — bisecting a dropped link caches live registers as dead for
+  ever. `ModbusTimeoutError` also subclasses the builtin
+  `TimeoutError`, and `coordinator.py` catches that for its own poll-overran
+  guard, so none may escape `hub.py`.
+- The **fake server is still pymodbus** (the library ships no server):
+  `ModbusDeviceContext`, and it bases its data block at `BASE+1` to compensate
+  pymodbus's legacy address+1 lookup — changing that shifts every simulated
+  register by one. `dev/ctc_modbus_test.py` is also still pymodbus, and
+  synchronous.
 - Don't cross-check register meanings against other community CTC integrations.
   At least one labels 62100 "heat pump status" (it's HP4's brine-out; real
   status is 62017) and defines float32 registers, of which the manual has none.
