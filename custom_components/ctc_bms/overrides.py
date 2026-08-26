@@ -9,6 +9,9 @@ Strictly things the generated map gets *wrong*, replaced by register number:
   3-phase supply currents (most installs don't wire all three, so they read 0)
   and the immersion-heater power (absent or idle on many units). These are
   created but start disabled, so they're one click away without cluttering.
+- **Where 0 means "no reading".** The map says a register is a temperature; it
+  does not say the controller leaves the ones it isn't computing at 0 rather
+  than at the -9999/-10000 sentinel. See `zero_is_unknown` below.
 
 Entity names are NOT here, though they were once: the manual gives no display
 names at all, so naming isn't overriding anything. See names.py.
@@ -32,6 +35,11 @@ class Override:
     # False: the entity is created but disabled in the registry (one click to
     # enable), rather than absent.
     enabled_default: bool = True
+    # True: a raw 0 reads as unknown, like the -9999/-10000 sentinel. Only for
+    # registers where 0 is not a value the quantity can actually take - see the
+    # note above OVERRIDES. Never a blanket rule: 0 degrees outdoors is a
+    # perfectly ordinary morning.
+    zero_is_unknown: bool = False
 
 
 _DEFAULT = Override()
@@ -47,6 +55,31 @@ OVERRIDES: dict[int, Override] = {
     # is absent or idle on many installs (reads 0), so ship them off.
     62168: Override(enabled_default=False),  # sPowerConsumption
     62169: Override(enabled_default=False),  # sPowerConsumptionHS
+    #
+    # DHW temperatures the controller leaves at 0 when it isn't computing them.
+    # The map documents five DHW temperature registers; a given install
+    # populates the ones its tank arrangement has and parks the rest at 0 - not
+    # at the -9999/-10000 "no sensor" sentinel, which would have been honest.
+    # Measured on an EcoLogic M (system type 5, DHW in Comfort, stop temp 60)
+    # with a tank at 61 C: only 62276 carried it.
+    #
+    #     62002 sSetPDHW       0      62276 sDHWUpperTemp   610  <- the tank
+    #     62003 sDHWTemp       0
+    #     62275 sDHWLowerTemp  0
+    #
+    # 62003 is the one named plainly "Temperature", so the CTC Hot Water device
+    # led with a headline 0.0 C while the water was scalding. Unknown is the
+    # truthful state: the register answered, it just holds no reading.
+    #
+    # Safe because none of these can legitimately read 0. A stored-water
+    # temperature of exactly 0.0 C is a frozen tank, and 62002 is a *setpoint* -
+    # the controller has no 0 C hot-water setting to hold. Contrast 62000
+    # outdoor temperature, where 0 is ordinary, and 62279 sDHWCapacity, where
+    # 0% is a real (empty) tank: both deliberately left alone.
+    62002: Override(zero_is_unknown=True),  # sSetPDHW
+    62003: Override(zero_is_unknown=True),  # sDHWTemp
+    62275: Override(zero_is_unknown=True),  # sDHWLowerTemp
+    62276: Override(zero_is_unknown=True),  # sDHWUpperTemp
 }
 
 

@@ -28,6 +28,11 @@ FAKE_REGISTERS: dict[int, int] = {
     62000: s16(-53),   # outside temp = -5.3 C
     62016: 1,          # DHW circulation pump running (R bool -> binary_sensor)
     62017: 3,          # HP1 status = compressor on
+    # The EcoLogic M's DHW reality: of five documented tank temperatures only
+    # the upper sensor is populated, and the others sit at 0 rather than at the
+    # sentinel. 62002/62003/62275 are left out of this dict on purpose, so they
+    # read 0 exactly as the hardware does.
+    62276: s16(610),   # DHW upper = 61.0 C - the only real tank reading
     62027: s16(466),   # HP1 temp in = 46.6 C
     62186: 8,          # total operation LSB
     62187: 0,          # total operation MSB -> 8 h

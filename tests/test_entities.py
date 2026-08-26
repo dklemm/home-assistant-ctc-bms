@@ -211,6 +211,25 @@ async def test_sensor_values(hass, mock_hub):
     assert float(hass.states.get(entity_id(hass, entry, "sensor", 62037)).state) == 0
 
 
+async def test_unpopulated_dhw_temperatures_read_unknown(hass, mock_hub):
+    """0 C in a hot water tank is no reading, not a reading of zero.
+
+    The controller populates whichever tank temperatures its arrangement has
+    and parks the rest at 0 - not at the -9999/-10000 sentinel. On an EcoLogic
+    M only 62276 is live, so "Temperature" (62003) led the Hot Water device
+    with a headline 0.0 C while the water was at 61.
+    """
+    entry = await setup_entry(hass)
+    for number in (62002, 62003, 62275):
+        assert hass.states.get(
+            entity_id(hass, entry, "sensor", number)
+        ).state == "unknown", number
+    # The one the tank actually reports through still decodes.
+    assert float(
+        hass.states.get(entity_id(hass, entry, "sensor", 62276)).state
+    ) == 61.0
+
+
 async def test_friendly_names_compose_with_the_device(hass, mock_hub):
     """has_entity_name: HA prepends the device, so the name must not repeat it."""
     entry = await setup_entry(hass)

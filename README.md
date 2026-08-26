@@ -41,6 +41,11 @@ It talks pymodbus directly — no YAML `modbus:` platform, no templates:
   become valves; pump on/off outputs become binary sensors.
 - Correct decoding of negative temperatures, the −9999/−10000 "no sensor"
   sentinel (shown as *unknown*), and the controller's LSB-first 32-bit values.
+- **No phantom zeros.** The manual documents five hot water tank temperatures
+  and your controller populates only the ones your tank arrangement has,
+  leaving the others at 0 — so *Hot Water → Temperature* could read 0.0 °C
+  beside a tank at 61 °C. Those read *unknown* now, and the one your tank
+  actually reports through shows the real value.
 
 The register map (554 registers) is generated from CTC's official BMS manual
 (*User Manual-BMS Manual-16260016*), not copied from other integrations.

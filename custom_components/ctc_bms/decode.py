@@ -5,6 +5,7 @@ Pure functions, no I/O; shared by entities, config flow and tests.
 
 from __future__ import annotations
 
+from .overrides import override_for
 from .registers import Reg
 
 # An unfitted sensor reports -9999/-10000 rather than an error. Numerically
@@ -37,8 +38,21 @@ def decode_value(reg: Reg, words: list[int]) -> float:
 
 
 def is_sentinel(reg: Reg, words: list[int]) -> bool:
-    """True when the value is the "no sensor fitted" marker."""
-    return reg.count == 1 and words[0] in SENTINELS
+    """True when the register answered but holds no reading.
+
+    Two markers, because the controller uses two. -9999/-10000 is the
+    documented "no sensor fitted" one and applies everywhere. A plain 0 is the
+    undocumented one, and applies *only* to the registers overrides.py marks
+    `zero_is_unknown` - a handful of DHW temperatures the controller parks at 0
+    when its tank arrangement doesn't have them. Generalising that to every
+    register would erase real readings; 0 is a normal outdoor temperature and a
+    real (idle) compressor speed.
+    """
+    if reg.count != 1:
+        return False
+    if words[0] in SENTINELS:
+        return True
+    return words[0] == 0 and override_for(reg.number).zero_is_unknown
 
 
 def is_present(regs: list[Reg], words: dict[int, int]) -> bool:

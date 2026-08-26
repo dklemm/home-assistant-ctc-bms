@@ -44,7 +44,7 @@ out unitless when they're Amps) or a register is real but rarely wanted (the
 3-phase currents, immersion-heater power — created but shipped disabled), fix it
 in `overrides.py` keyed by register number, **not** in the generated map. An
 `Override` carries a unit, an optional value `factor` (e.g. ×1000 to show a kW
-register in W), and `enabled_default`.
+register in W), `enabled_default`, and `zero_is_unknown`.
 
 **`reg.name` is not a display name.** It is the manual's Name column: shorthand
 (`CurrRPS`, `sSetPDHW`, `sDM`), and *blank* on many rows, where the generator
@@ -107,6 +107,27 @@ subsystem, so upgrades never remove entities.
 = 0). Presence = **≥2 registers with real nonzero data**, where the
 −9999/−10000 sentinel counts as *absence* (it is numerically nonzero — never
 count raw nonzeros). A 0 is a real reading (idle compressor).
+
+**Except where it can't be.** The controller has a *second*, undocumented
+"no reading" marker: a plain 0, used where −9999/−10000 would have been honest.
+The map documents five DHW tank temperatures and an install populates only the
+ones its arrangement has, parking the rest at 0 — on the EcoLogic M just 62276
+carries the tank (610 = 61.0 °C) while 62002, 62003 and 62275 sit at zero, so
+the entity named plainly *Temperature* (62003) led the Hot Water device with a
+headline 0.0 °C beside 61 °C water. Those four carry `zero_is_unknown` in
+`overrides.py` and `is_sentinel()` reads it, so they report *unknown* instead.
+
+**Never generalise that flag.** It is only ever right for a quantity that
+physically cannot sit at zero — stored water is never 0.0 °C, and a DHW
+setpoint of 0 is not a setting the controller can hold. 62000 outdoor
+temperature (0 °C is an ordinary morning) and 62279 DHW capacity (0 % is an
+empty tank) are deliberately left alone, and
+`tests/test_overrides.py::test_zero_is_unknown_is_confined_to_temperatures` is
+the gate. `is_present()` is unaffected either way — it already counts nonzeros.
+
+Renaming was the tempting fix and is the wrong one: 62003 *is* the hot water
+temperature on the controllers that populate it, and the register number is the
+unique_id, so shuffling names only moves the lie to a different install.
 
 ## Hard-won Modbus gotchas (do not re-learn these)
 
