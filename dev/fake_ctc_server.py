@@ -9,19 +9,100 @@ leaves HP2..HP10 at zero, which is what a single-pump installation looks like.
     python ctc_modbus_test.py --host 127.0.0.1 --port 5020 verify
 """
 import argparse
+import time
 
 from pymodbus.datastore import (ModbusDeviceContext, ModbusSequentialDataBlock,
                                 ModbusServerContext)
 from pymodbus.server import StartTcpServer
 
-BASE = 61500            # lowest register we serve
+# One block spans the control registers and the BMS map. 1000 rather than 61500
+# so the 1000-1100 "control parameters" are servable; the intervening addresses
+# answer 0 where real hardware is silent, which the simulator already does for
+# unimplemented 61500-range registers, so it is no new kind of infidelity.
+BASE = 1000             # lowest register we serve
 TOP = 62600             # one past the highest
+
+CONTROL_LO, CONTROL_HI = 1000, 1100
+VDI = 1100              # virtual digital inputs, bits 0-7 = DI0-DI7
 
 NOT_FITTED = 55536      # -10000: the controller's "no sensor connected" sentinel
 
 
 def s16(v: int) -> int:
     return v & 0xFFFF
+
+
+class ControlSemantics:
+    """Models what makes the control registers different from the BMS map.
+
+    Two behaviours, without which the interesting half of the feature cannot be
+    exercised without hardware:
+
+    * **Expiry.** A control register not re-written within `expiry` seconds
+      reverts to 0, as the manual says the controller does after 5 minutes.
+    * **Read-back mirrors.** Real control registers are write-only; what proves
+      a write landed is some *other* register moving. Mirror the documented
+      pairs so the whole loop is observable.
+
+    Implemented as a pymodbus `SimAction` rather than a data-block subclass:
+    since 3.14 `ModbusDeviceContext` deep-copies the block into a `SimDevice` at
+    construction, so an overridden `setValues` is simply never called. The hook
+    fires on *every* access - reads carry `values=None`, writes carry the
+    incoming words and fire before the store is updated - which also lets expiry
+    be evaluated lazily on access instead of from a background thread.
+    """
+
+    def __init__(self, expiry: float, sg_bits: tuple[int, int],
+                 dhw_bit: int | None):
+        self.expiry = expiry
+        self.sg_bits = sg_bits
+        self.dhw_bit = dhw_bit
+        self.written: dict[int, float] = {}
+
+    def as_action(self):
+        """A bare `async def` closure - pymodbus rejects anything else.
+
+        It checks `iscoroutinefunction`, which is False for an instance with an
+        `async def __call__`, so the state has to live outside the callable.
+        """
+        async def action(fc, base, address, count, registers, values):
+            return self.handle(fc, base, address, count, registers, values)
+        return action
+
+    def handle(self, fc, base, address, count, registers, values):
+        now = time.monotonic()
+        for number, when in list(self.written.items()):
+            if now - when > self.expiry:
+                del self.written[number]
+                registers[number - base] = 0
+                self._mirror(registers, base, number, 0)
+                print(f"  [sim] {number} expired after {self.expiry:g}s -> 0")
+        if values is None:
+            return None                      # a read
+        for i in range(count):
+            number = address + i
+            if CONTROL_LO <= number <= CONTROL_HI:
+                self.written[number] = now
+                self._mirror(registers, base, number, values[i])
+        return None
+
+    def _mirror(self, registers, base: int, number: int, word: int) -> None:
+        def put(target: int, value: int) -> None:
+            registers[target - base] = value
+
+        if number == VDI:
+            a, b = self.sg_bits
+            closed = ((word >> a) & 1, (word >> b) & 1)
+            # The manual's SmartGrid truth table, as read back on 62301 SGMode.
+            put(62301, {(0, 0): 0, (0, 1): 2, (1, 1): 3, (1, 0): 1}[closed])
+            if self.dhw_bit is not None:
+                put(62016, (word >> self.dhw_bit) & 1)
+        elif number == 1033:
+            put(62001, word)                 # DHW tank setpoint -> stop temp
+        elif number == 1007:
+            put(61500, word)                 # DHW mode
+        elif number == 1002:
+            put(62193, word)                 # max RPS -> current RPS
 
 
 def main():
@@ -72,18 +153,38 @@ def main():
     put(62254, 11)             # HP1 type
     put(62331, s16(50))        # HP1 power consumption = 5.0 kW
 
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument("--port", type=int, default=5020)
+    ap.add_argument("--expiry", type=float, default=300.0,
+                    help="seconds before an un-refreshed control register "
+                         "reverts to 0 (the controller's is 300; use 30 to "
+                         "watch it happen)")
+    ap.add_argument("--sg-bits", default="6,7", metavar="A,B",
+                    help="which DI bits mirror to 62301 as SmartGrid A/B")
+    ap.add_argument("--dhw-bit", type=int, default=3,
+                    help="which DI bit mirrors to 62016 DHW circulation, "
+                         "standing in for a site's K22")
+    args = ap.parse_args()
+
+    sg_bits = tuple(int(b) for b in args.sg_bits.replace(",", " ").split())
+
     # ModbusDeviceContext applies the legacy address+1 lookup into the block
     # (pymodbus 3.14 dropped the zero_mode knob but not the offset), so basing
     # the block at BASE+1 is what makes Modbus address N return values[N-BASE].
     block = ModbusSequentialDataBlock(BASE + 1, values)
     device = ModbusDeviceContext(hr=block, ir=block)
     context = ModbusServerContext(devices=device, single=True)
+    # Attached after construction: ModbusDeviceContext copies the block into the
+    # SimDevice, and the SimDevice is where the action hook lives.
+    context.simdevices[0].action = ControlSemantics(
+        args.expiry, sg_bits, args.dhw_bit).as_action()
 
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", type=int, default=5020)
-    args = ap.parse_args()
     print(f"Fake CTC serving on {args.host}:{args.port} (Ctrl+C to stop)")
+    print(f"  registers {BASE}-{TOP - 1}; controls {CONTROL_LO}-{CONTROL_HI} "
+          f"expire after {args.expiry}s")
+    print(f"  1100 bits {sg_bits[0]}/{sg_bits[1]} -> 62301 SGMode, "
+          f"bit {args.dhw_bit} -> 62016 DHW circulation")
     StartTcpServer(context=context, address=(args.host, args.port))
 
 

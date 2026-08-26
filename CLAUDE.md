@@ -24,7 +24,7 @@ address is site-specific and deliberately not recorded here.
 | `dev/scripts/parse_bms.py` | BMS manual PDF → `dev/bms_registers.json` |
 | `dev/scripts/gen_registers.py` | `dev/bms_registers.json` → `registers.py` |
 | `dev/fake_ctc_server.py` | simulator on 127.0.0.1:5020 (`--port` to change) |
-| `dev/ctc_modbus_test.py` | field CLI: `verify`, `devices`, `read`, `poll`, `scan` |
+| `dev/ctc_modbus_test.py` | field CLI: `verify`, `devices`, `read`, `poll`, `scan`, `control`, `probe`, `discover-di` |
 
 ## Source of truth
 

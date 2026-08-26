@@ -29,6 +29,16 @@ Usage:
     python ctc_modbus_test.py ha 62027          # print Home Assistant YAML
     python ctc_modbus_test.py list              # list known registers
 
+Two commands WRITE, and only ever to the 1000-1100 "control parameters" - which
+the manual says carry no write-cycle cost and are discarded by the controller
+after 5 minutes. Both need --yes:
+
+    python ctc_modbus_test.py control 1100 64 --hold 60 --yes   # close DI6
+    python ctc_modbus_test.py discover-di --quick --yes         # what is each bit?
+
+Nothing here ever writes a 61500-range register: those are stored parameters
+with a limited write-cycle count.
+
 Requires: pip install pymodbus   (tested with pymodbus 3.14, API >= 3.13)
 """
 
@@ -117,6 +127,44 @@ def read_block(client, address: int, device_id: int, count: int):
         return rr.registers
     except ModbusException:
         return None
+
+
+def write_register(client, address: int, value: int, device_id: int):
+    """Write one holding register with FC16. Returns (ok, detail).
+
+    The manual specifies FC16 even for a single register, which is what the HA
+    integration does too. Only ever called on the 1000-range control registers
+    by this tool - see the warning in cmd_discover_di.
+    """
+    try:
+        rr = client.write_registers(address, [value], device_id=device_id)
+        if rr.isError():
+            return False, f"controller rejected the write ({rr})"
+        return True, ""
+    except ModbusException as err:
+        return False, str(err)
+
+
+def hold_write(client, address: int, value: int, device_id: int,
+                seconds: float, refresh: float = 60.0) -> bool:
+    """Keep a control register asserted for `seconds`.
+
+    The 1000-range registers are discarded by the controller if they are not
+    re-written within 5 minutes, so anything observed for longer than that has
+    to be refreshed. 60 s gives four refreshes per window - the same
+    belt-and-braces margin the integration's keepalive uses.
+    """
+    deadline = time.time() + seconds
+    ok, detail = write_register(client, address, value, device_id)
+    if not ok:
+        print(f"  write {address}={value} failed: {detail}")
+        return False
+    while time.time() < deadline:
+        time.sleep(min(refresh, max(deadline - time.time(), 0)))
+        if time.time() >= deadline:
+            break
+        write_register(client, address, value, device_id)
+    return True
 
 
 def read_addresses(client, addrs: set[int], device_id: int) -> dict[int, int]:
@@ -479,6 +527,315 @@ modbus:
     return 0
 
 
+# ---------------------------------------------------------------------------
+# Control registers (1000-1100)
+# ---------------------------------------------------------------------------
+#
+# A different family from everything above: write-only, no read-back, no
+# write-cycle cost, and DISCARDED BY THE CONTROLLER AFTER 5 MINUTES unless
+# re-written. Register 1100 is the virtual digital inputs, which the manual says
+# stand in for terminals K22-K24 - bits 0..7 = DI0..DI7, 0 = open, 1 = closed.
+
+VDI_REGISTER = 1100
+CONTROL_RANGE = range(1000, 1101)
+
+# Registers worth watching while a virtual input is closed: the documented
+# read-backs for SmartGrid, DHW circulation and the zone/DHW states. --quick
+# narrows the sweep to these; the default watches every system R register,
+# because the point of discovery is finding read-backs we did NOT predict.
+QUICK_WATCH = [
+    62301,                      # SGMode - the SmartGrid read-back
+    62016,                      # sDHWPump "DHW circulation"
+    62005,                      # sStatus - what the installation is doing
+    62001, 62002, 62003,        # DHW stop temp / outlet setpoint / temperature
+    62246, 62247, 62248, 62249,  # zone status
+    62322,                      # active cooling demand
+    62280,                      # exhaust fan percent
+    62365,                      # periodic extra DHW status
+    62017,                      # HP1 status
+]
+
+
+def _watch_set(args) -> list[int]:
+    if args.watch:
+        return sorted({int(t) for t in args.watch.replace(",", " ").split()})
+    if args.quick:
+        return sorted(QUICK_WATCH)
+    # Everything readable, not just the system registers: a digital input could
+    # plausibly drive a zone or heat-pump state, and block reads make the extra
+    # coverage free. (read_addresses returns every address inside each span it
+    # reads, so the set actually compared is wider still - it is reported.)
+    return sorted(r.number for r in all_registers(args.hp, args.zone)
+                  if r.access == "R" and r.count == 1)
+
+
+def _describe(number: int, by_number: dict[int, Reg]) -> str:
+    reg = by_number.get(number)
+    return f"{reg.name} - {reg.desc[:40]}" if reg else "(not in the map)"
+
+
+def cmd_control(args):
+    """Write a 1000-range control register, optionally holding it asserted."""
+    if args.number not in CONTROL_RANGE:
+        sys.exit(f"{args.number} is not a control register (1000-1100). This "
+                 f"tool will not write anything else - the 61500-range "
+                 f"registers are stored parameters with a limited write-cycle "
+                 f"count.")
+    if not args.yes:
+        sys.exit("This writes to a live heating system. Re-run with --yes.")
+    client = connect(args)
+    try:
+        if args.hold:
+            print(f"Holding {args.number} = {args.value} for {args.hold}s "
+                  f"(re-writing every 60s; the controller discards it after "
+                  f"300s without one). Ctrl+C to stop.")
+            hold_write(client, args.number, args.value, args.device_id,
+                       args.hold)
+            print("Done - the value now expires on the controller's own "
+                  "5-minute timer.")
+        else:
+            ok, detail = write_register(client, args.number, args.value,
+                                        args.device_id)
+            print(f"{args.number} = {args.value}: "
+                  f"{'written' if ok else 'FAILED - ' + detail}")
+            if ok:
+                print("Note: write-only, so this cannot be read back, and the "
+                      "controller discards it within 5 minutes.")
+            return 0 if ok else 1
+    except KeyboardInterrupt:
+        print("\nInterrupted.")
+    finally:
+        client.close()
+    return 0
+
+
+def _baseline(client, watch, args):
+    """Read the watch set twice and return (values, drifting addresses).
+
+    Anything moving on its own - temperatures, degree minutes, run counters -
+    is masked out of every later comparison, or the results are thermal noise.
+    """
+    print("Baseline...")
+    time.sleep(args.settle)
+    first = read_addresses(client, set(watch), args.device_id)
+    time.sleep(args.settle)
+    base = read_addresses(client, set(watch), args.device_id)
+    drift = {a for a in base if first.get(a) != base.get(a)}
+    print(f"  comparing {len(base)} addresses "
+          f"(block reads return more than the {len(watch)} asked for)"
+          + (f"; ignoring {len(drift)} that drift on their own" if drift else ""))
+    return base, drift
+
+
+def cmd_probe(args):
+    """Write a control register two different values and report what moved.
+
+    Answers the two questions a write-only register cannot answer itself: did
+    the controller act on it, and what scale is it using? Two values rather than
+    one because a read-back that *tracks* both is causal, where a single change
+    could be coincidence - and the pair of readings is what reveals the scale.
+
+    There is no "release" for a setpoint: writing 0 would be a command, not a
+    release, so the probe simply stops refreshing and lets the controller's own
+    5-minute expiry undo it.
+    """
+    if args.number not in CONTROL_RANGE:
+        sys.exit(f"{args.number} is not a control register (1000-1100).")
+    if not args.yes:
+        sys.exit(
+            f"probe WRITES to a live heating system.\n\n"
+            f"It sets register {args.number} to {args.first}, then {args.second}, "
+            f"holding each for {args.dwell:g}s, and reports which registers "
+            f"followed.\nBoth values are discarded by the controller within 5 "
+            f"minutes of the last write.\nDisable the Home Assistant config "
+            f"entry first - the controller cannot pipeline.\n\n"
+            f"Re-run with --yes."
+        )
+
+    watch = _watch_set(args)
+    by_number = {r.number: r for r in all_registers(args.hp, args.zone)}
+    client = connect(args)
+    print(f"\nProbing {args.number} with {args.first} then {args.second}, "
+          f"holding each {args.dwell:g}s.\n")
+    try:
+        base, drift = _baseline(client, watch, args)
+
+        phases = []
+        for value in (args.first, args.second):
+            print(f"  {args.number} = {value} ... holding {args.dwell:g}s")
+            if not hold_write(client, args.number, value, args.device_id,
+                              args.dwell):
+                sys.exit(f"Could not write {args.number}.")
+            phases.append(read_addresses(client, set(watch), args.device_id))
+
+        moved = sorted(
+            a for a in base
+            if a not in drift
+            and (phases[0].get(a) != base[a] or phases[1].get(a) != base[a])
+        )
+        print("\n" + "=" * 78)
+        if not moved:
+            print(f"Nothing responded to register {args.number}.\n\n"
+                  f"Either this controller does not implement it, or the "
+                  f"function behind it\nis not configured/enabled in the "
+                  f"controller's own menus. Note that this\ncontroller accepts "
+                  f"writes it does not act on, so the successful write\nabove "
+                  f"is not evidence either way.")
+        else:
+            print(f"{'Reg':>6} {'base':>7} {'@' + str(args.first):>8} "
+                  f"{'@' + str(args.second):>8}   Name / decoded")
+            print("-" * 78)
+            for a in moved:
+                reg = by_number.get(a)
+                b, p1, p2 = base[a], phases[0].get(a), phases[1].get(a)
+                print(f"{a:>6} {b:>7} {p1:>8} {p2:>8}   "
+                      f"{reg.name if reg else '(not in the map)'}")
+                if reg:
+                    dec = [format_value(reg, [v]) for v in (b, p1, p2)]
+                    print(f"{'':>6} {'':>7} {'':>8} {'':>8}   "
+                          f"decoded: {dec[0]} -> {dec[1]} -> {dec[2]}")
+            tracking = [a for a in moved
+                        if phases[0].get(a) == args.first
+                        and phases[1].get(a) == args.second]
+            if tracking:
+                print(f"\n{', '.join(str(a) for a in tracking)} copied the "
+                      f"written word exactly, so {args.number} and that "
+                      f"read-back share a scale.")
+    except KeyboardInterrupt:
+        print("\nInterrupted.")
+    finally:
+        client.close()
+    print(f"\nStopped writing. The controller discards {args.number} within 5 "
+          f"minutes\nand reverts to its own stored setting - nothing to undo.")
+    return 0
+
+
+def cmd_discover_di(args):
+    """Find which virtual digital input bit does what, empirically.
+
+    The manual is explicit that a terminal's DI number is configured in the
+    controller's own menus, so it cannot be looked up - only observed. This
+    closes one bit at a time and reports which registers moved *and moved back*,
+    which is what separates a real effect from thermal drift.
+    """
+    if not args.yes:
+        print(__doc__.split("Usage:")[0])
+        sys.exit(
+            "discover-di WRITES to a live heating system.\n"
+            "\n"
+            "It closes each virtual digital input in turn. Depending on how the\n"
+            "inputs are configured on your controller that can block the heat\n"
+            "pump, start hot water circulation, force SmartGrid states or change\n"
+            "zone modes. Each state is held for the dwell time and then released.\n"
+            "\n"
+            "Before running:\n"
+            "  * disable the Home Assistant config entry - the controller cannot\n"
+            "    pipeline, and two masters writing 1100 produce nonsense;\n"
+            "  * do not run it while anyone needs hot water or heating;\n"
+            "  * know that everything written here self-expires within 5 minutes.\n"
+            "\n"
+            "Re-run with --yes when that is all true."
+        )
+
+    bits = [int(b) for b in args.bits.replace(",", " ").split()]
+    if any(b < 0 or b > 7 for b in bits):
+        sys.exit("bits must be 0-7")
+    watch = _watch_set(args)
+    by_number = {r.number: r for r in all_registers(args.hp, args.zone)}
+    est = len(bits) * (args.dwell + 2 * args.settle) / 60.0
+
+    client = connect(args)
+    print(f"\nWatching {len(watch)} registers, {len(bits)} bits, "
+          f"dwell {args.dwell}s, settle {args.settle}s "
+          f"-> about {est:.0f} minutes.\n")
+    try:
+        ok, detail = write_register(client, VDI_REGISTER, 0, args.device_id)
+        if not ok:
+            sys.exit(f"Cannot write register {VDI_REGISTER}: {detail}\n"
+                     f"This controller may not support virtual digital inputs.")
+
+        base, drift = _baseline(client, watch, args)
+
+        findings: dict[int, list[tuple[int, int, int]]] = {}
+        for bit in bits:
+            mask = 1 << bit
+            print(f"\nDI{bit} (1100 = {mask})... closing for {args.dwell}s")
+            if not hold_write(client, VDI_REGISTER, mask, args.device_id,
+                              args.dwell):
+                continue
+            closed = read_addresses(client, set(watch), args.device_id)
+
+            changed = {a: (base[a], closed[a]) for a in closed
+                       if a in base and a not in drift
+                       and closed[a] != base[a]}
+
+            write_register(client, VDI_REGISTER, 0, args.device_id)
+            time.sleep(args.settle)
+            after = read_addresses(client, set(watch), args.device_id)
+
+            # A change that does not revert was drift we failed to catch in the
+            # baseline, not this bit.
+            hits = [(a, was, now) for a, (was, now) in sorted(changed.items())
+                    if after.get(a) == was]
+            stuck = [a for a in changed if after.get(a) != changed[a][0]]
+            findings[bit] = hits
+            if hits:
+                for a, was, now in hits:
+                    print(f"    {a:>6}  {was:>6} -> {now:<6}  "
+                          f"{_describe(a, by_number)}")
+            else:
+                print("    no effect")
+            if stuck:
+                print(f"    ({len(stuck)} changed but did not revert - "
+                      f"treated as drift)")
+
+        print("\n" + "=" * 72)
+        print("Summary")
+        print("=" * 72)
+        for bit in bits:
+            hits = findings.get(bit) or []
+            if not hits:
+                print(f"  DI{bit}: nothing")
+                continue
+            names = ", ".join(f"{a} ({by_number[a].name})" if a in by_number
+                              else str(a) for a, _, _ in hits)
+            print(f"  DI{bit}: {names}")
+        print("\nA bit that moved 62016 (DHW circulation) is your K22 hot water"
+              "\ncirculation trigger. A bit that moved 62301 (SGMode) is a "
+              "SmartGrid\ninput - confirm the pair with --sg-pair A,B.")
+
+        if args.sg_pair:
+            a, b = (int(x) for x in args.sg_pair.replace(",", " ").split())
+            print(f"\nConfirming SmartGrid on DI{a} (A) / DI{b} (B) against "
+                  f"62301...")
+            # The manual's truth table: A open/B closed = Low price;
+            # both closed = Overcapacity; A closed/B open = Blocking.
+            expect = {
+                (0, 1): (2, "Low price"),
+                (1, 1): (3, "High capacity / overcapacity"),
+                (1, 0): (1, "Block"),
+                (0, 0): (0, "None / normal"),
+            }
+            for (ca, cb), (want, label) in expect.items():
+                mask = (ca << a) | (cb << b)
+                hold_write(client, VDI_REGISTER, mask, args.device_id,
+                           args.settle)
+                got = read_addresses(client, {62301}, args.device_id).get(62301)
+                verdict = "OK" if got == want else f"MISMATCH (wanted {want})"
+                print(f"    A={'closed' if ca else 'open':<6} "
+                      f"B={'closed' if cb else 'open':<6} "
+                      f"1100={mask:<4} 62301={got}  {label:<28} {verdict}")
+    except KeyboardInterrupt:
+        print("\nInterrupted.")
+    finally:
+        # Never leave an input closed. It would have expired within 5 minutes
+        # anyway, but do not make the user wait it out.
+        write_register(client, VDI_REGISTER, 0, args.device_id)
+        print(f"\nReleased: {VDI_REGISTER} = 0.")
+        client.close()
+    return 0
+
+
 def cmd_list(args):
     regs = selected_registers(args)
     print(f"{'Reg':>6}  {'A':<2} {'Type':<4} {'Scale':<5} {'Unit':<4} "
@@ -555,6 +912,52 @@ def main() -> int:
     sp.add_argument("--stride", type=int, default=16,
                     help="sampling step when skipping dead space (default 16)")
     sp.set_defaults(func=cmd_scan)
+
+    sp = sub.add_parser("control",
+                        help="write a 1000-range control register (WRITES!)")
+    sp.add_argument("number", type=int, help="1000-1100 only")
+    sp.add_argument("value", type=int)
+    sp.add_argument("--hold", type=float, metavar="SECONDS",
+                    help="keep re-writing it for this long (it expires after "
+                         "300s without a refresh)")
+    sp.add_argument("--yes", action="store_true",
+                    help="confirm you mean to write to a live heating system")
+    sp.set_defaults(func=cmd_control)
+
+    sp = sub.add_parser("probe",
+                        help="write a control register two values and report "
+                             "what followed (WRITES!)")
+    sp.add_argument("number", type=int, help="1000-1100 only")
+    sp.add_argument("first", type=int, help="first value to try")
+    sp.add_argument("second", type=int, help="second value, to confirm tracking")
+    sp.add_argument("--dwell", type=float, default=30.0,
+                    help="seconds to hold each value (default 30)")
+    sp.add_argument("--settle", type=float, default=10.0)
+    sp.add_argument("--watch", help="comma-separated registers to watch "
+                                    "(default: everything readable)")
+    sp.add_argument("--quick", action="store_true",
+                    help="watch only the documented read-backs")
+    sp.add_argument("--yes", action="store_true")
+    sp.set_defaults(func=cmd_probe)
+
+    sp = sub.add_parser("discover-di",
+                        help="find what each virtual digital input does (WRITES!)")
+    sp.add_argument("--bits", default="0,1,2,3,4,5,6,7",
+                    help="which bits to walk (default all 8)")
+    sp.add_argument("--dwell", type=float, default=30.0,
+                    help="seconds to hold each bit closed (default 30)")
+    sp.add_argument("--settle", type=float, default=10.0,
+                    help="seconds to wait before reading (default 10)")
+    sp.add_argument("--watch", help="comma-separated registers to watch "
+                                    "(default: every system read-only register)")
+    sp.add_argument("--quick", action="store_true",
+                    help="watch only the documented SmartGrid/DHW read-backs")
+    sp.add_argument("--sg-pair", metavar="A,B",
+                    help="after the walk, confirm these two bits are SmartGrid "
+                         "A/B against 62301")
+    sp.add_argument("--yes", action="store_true",
+                    help="confirm you mean to write to a live heating system")
+    sp.set_defaults(func=cmd_discover_di)
 
     sp = sub.add_parser("ha", help="print Home Assistant YAML for a register or device")
     sp.add_argument("register", nargs="?",
