@@ -64,6 +64,16 @@ def _drop_reclassified_entities(
         f"{entry.entry_id}_{reg.number}": coordinator.platform_for(key, reg)
         for key, reg in coordinator.entity_registers()
     }
+    # The 1000-range controls too, so promoting one (the EcoLogic S "Start heat
+    # pump" from a switch once its legend is confirmed) cleans up after itself.
+    # 1100's nine entities carry a suffix and are left alone.
+    wanted.update(
+        {
+            f"{entry.entry_id}_{control.number}": control.kind
+            for control in coordinator.controls()
+            if control.kind != "bitfield"
+        }
+    )
     for existing in er.async_entries_for_config_entry(registry, entry.entry_id):
         platform = wanted.get(existing.unique_id)
         if platform is not None and existing.domain != platform:
@@ -86,5 +96,9 @@ async def _async_options_updated(
 async def async_unload_entry(hass: HomeAssistant, entry: CtcConfigEntry) -> bool:
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unloaded:
+        # Stop refreshing the control registers, and write nothing: whatever
+        # was held is gone from the controller within five minutes, and a
+        # teardown is the wrong moment to command a heating system.
+        entry.runtime_data.hold.async_shutdown()
         await entry.runtime_data.hub.async_close()
     return unloaded

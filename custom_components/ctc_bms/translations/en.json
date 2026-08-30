@@ -27,6 +27,16 @@
         "data_description": {
           "setpoints": "A curated set: room temperature setpoints, night reduction, hot water stop temperature and mode, compressor max RPS, heating modes and programs, and blocking a heat pump."
         }
+      },
+      "controls": {
+        "title": "Control entities (optional)",
+        "description": "These are the registers CTC designed for automation. They cost **no write cycles**, so unlike the writable entities on the previous step they are safe to drive from a price signal or a solar forecast.\n\nThe trade-off is different: a control is discarded by the controller **5 minutes** after the last write, and on restart. To hold one, Home Assistant re-writes it every minute — the only thing this integration ever writes without a service call behind it. Stop Home Assistant and the controller goes back to its own settings within five minutes, which is the safety feature, not a bug.\n\nA control overrides the matching setting rather than changing it. Each one has a released state — *Not controlled* on a mode, 0 on a setpoint — and releasing writes nothing at all.\n\nYou can change this later in the integration's options.",
+        "data": {
+          "controls": "Create control entities (1000-range)"
+        },
+        "data_description": {
+          "controls": "Max RPS, hot water mode and tank setpoint, zone modes and room setpoints, immersion heater power, pool, cooling and ventilation setpoints, and the eight virtual digital inputs (SmartGrid)."
+        }
       }
     },
     "error": {
@@ -46,13 +56,19 @@
           "zones": "Heating systems (zones) to create devices for",
           "model": "Controller model",
           "subsystems": "Subsystems to create devices for",
-          "setpoints": "Create writable entities"
+          "setpoints": "Create writable entities",
+          "controls": "Create control entities (1000-range)",
+          "smartgrid_a": "SmartGrid A input",
+          "smartgrid_b": "SmartGrid B input"
         },
         "data_description": {
           "heat_pumps": "Detection can miss hardware that is idle (e.g. compressors in summer read 0 everywhere); force-enable it here.",
           "model": "Only labels the controller device. Which subsystems exist is controlled below — changing the model here does not re-tick them.",
           "subsystems": "A controller answers the solar, pool and wood-boiler registers whether or not that hardware is installed, so this cannot be detected. Untick anything you do not have: its device and entities disappear and its registers stop being polled.",
-          "setpoints": "⚠️ These write to the controller's stored parameters, which have a limited number of write cycles — CTC warns that changing them too often risks breaking the controller. Safe to change by hand; do not drive them from an automation on a timer or a price signal. Untick for a strictly read-only integration."
+          "setpoints": "⚠️ These write to the controller's stored parameters, which have a limited number of write cycles — CTC warns that changing them too often risks breaking the controller. Safe to change by hand; do not drive them from an automation on a timer or a price signal. Untick for a strictly read-only integration.",
+          "controls": "The 1000-range registers CTC designed for automation: no write-cycle cost, but a control is discarded 5 minutes after the last write, so holding one means Home Assistant re-writes it every minute. This is the right place to drive a heat pump from a price signal.",
+          "smartgrid_a": "Which virtual digital input your controller has configured as SmartGrid A (K22). Set both A and B to get a SmartGrid entity; leave either \"Not used\" and only the raw input switches are created. `python dev/ctc_modbus_test.py discover-di --yes` finds them empirically.",
+          "smartgrid_b": "Which virtual digital input your controller has configured as SmartGrid B (K23)."
         }
       }
     }

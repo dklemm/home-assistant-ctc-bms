@@ -37,6 +37,14 @@ platform, no templates:
   *no*; read
   [Do not automate the writable entities](#do-not-automate-the-writable-entities)
   before you tick it.
+- **Control entities for automation — the safe way to drive the pump.** CTC's
+  1000-range control registers cost **no write cycles**, so this is where a
+  price signal or a solar forecast belongs: max RPS, hot water mode and tank
+  setpoint, zone modes and room setpoints, pool, cooling and ventilation
+  setpoints, and SmartGrid through the virtual digital inputs. A control is
+  discarded by the controller five minutes after the last write, so Home
+  Assistant re-writes it every minute — stop Home Assistant and the controller
+  goes back to its own settings. Also off by default.
 - **The right entity type**: documented states become enum sensors reporting
   "Compressor on, heating" rather than `3`; the two-position diverter valves
   become valves; pump on/off outputs become binary sensors.
@@ -111,13 +119,48 @@ Two things reduce the risk, neither of which makes automation safe:
   that re-asserts a steady value costs nothing. An automation whose value
   actually moves still writes every time it moves.
 
-If you need frequent control, the manual's answer is the **1000-range control
-registers** (`Max RPS`, zone modes, DHW mode, SmartGrid via virtual digital
-inputs). They carry no write-cycle cost, but expire after 5 minutes unless
-refreshed — and this integration does not implement them yet.
-
 *"Create writable entities"* in Options turns them on or off at any time;
 leaving it off removes the risk entirely.
+
+## Automate the control entities instead
+
+CTC's answer to all of the above is the **1000-range control registers**, and
+the manual is blunt about the difference: *"These parameters can be set as much
+as the programmer wants, without any risks."* Tick **Create control entities**
+and you get them.
+
+They work differently, and the difference is the safety feature:
+
+- A control **overrides** the controller's setting rather than changing it.
+  Nothing is stored, so nothing wears out.
+- The controller **discards a control five minutes after the last write**, and
+  on restart. To hold one, Home Assistant re-writes it every minute — the only
+  thing this integration ever writes without a service call behind it. Stop
+  Home Assistant, pull the network cable, or reload the integration, and the
+  heat pump is back on its own settings within five minutes.
+- Every control has a **released** state, and releasing writes nothing at all:
+  *Not controlled* on a mode, `0` on a setpoint. A released control reads
+  *unknown*, because the register is write-only — there is nothing to read
+  back.
+
+So `Max RPS override` on the System device is the right way to cap the
+compressor on an expensive half-hour, and `Mode override` on Hot Water is the
+right way to push a tank charge when the sun is out. The matching **stored**
+entities (`Max RPS`, `Mode`, without "override") are still there for settings
+you change by hand.
+
+**SmartGrid** needs one piece of configuration. The eight virtual digital
+inputs on register 1100 stand in for terminals K22-K24, but which input carries
+which function is set in the controller's own menus, so it cannot be detected.
+Tell Options which inputs are *SmartGrid A* and *SmartGrid B* and a SmartGrid
+entity appears with the manual's four states (Normal, Low price, Overcapacity,
+Blocking). Not sure which they are?
+`python dev/ctc_modbus_test.py discover-di --yes` closes each input in turn and
+reports what moved. The raw input switches are always created (disabled by
+default) if you would rather drive the bits yourself.
+
+One caution: the controller cannot handle two masters. Disable the config entry
+before running the CLI's `probe` or `discover-di` against the same pump.
 
 ## Development
 

@@ -5,8 +5,10 @@ from __future__ import annotations
 import re
 
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
+from .controls import Control
 from .coordinator import CtcCoordinator
 from .decode import decode_value, is_sentinel
 from .hub import CtcConnectionError
@@ -123,8 +125,9 @@ class CtcEntity(CoordinatorEntity[CtcCoordinator]):
         before every write, and the window closes at the next poll.
 
         For anything that genuinely needs to change often, the manual's answer
-        is the 1000-range control registers, which are free of write-cycle cost
-        (and which this integration does not implement yet).
+        is the 1000-range control registers, which are free of write-cycle
+        cost. Those are CtcControlEntity below, and they deliberately do none
+        of this: re-writing them is the point.
         """
         current = self._written_raw
         if current is None:
@@ -148,3 +151,56 @@ class CtcEntity(CoordinatorEntity[CtcCoordinator]):
         # change made at the controller's own panel.
         self._written_raw = None
         super()._handle_coordinator_update()
+
+
+class CtcControlEntity(Entity):
+    """One 1000-range control on one HA device.
+
+    Beside CtcEntity rather than under it: a control has no Reg and no poll to
+    ride on. The registers are write-only, so the only honest state is what we
+    are asserting - which lives in the coordinator's ControlHold, and is None
+    when the control is released.
+
+    A control shares the device of the hardware it drives, so it sits next to
+    the stored parameter it shadows. The names end in "override" to keep the
+    two apart: the Hot Water device carries both "Mode" (61500, a setting) and
+    "Mode override" (1007, a command).
+    """
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+
+    def __init__(
+        self,
+        coordinator: CtcCoordinator,
+        control: Control,
+        *,
+        name: str | None = None,
+        unique_suffix: str | None = None,
+    ) -> None:
+        self.coordinator = coordinator
+        self.control = control
+        self.hold = coordinator.hold
+        self._attr_name = name or control.name
+        # Register numbers are the stable identity of this map, as they are for
+        # the polled entities. 1100 needs a suffix because nine entities share
+        # the one word.
+        key = control.number if unique_suffix is None else (
+            f"{control.number}_{unique_suffix}"
+        )
+        self._attr_unique_id = f"{coordinator.config_entry.entry_id}_{key}"
+        self._attr_entity_registry_enabled_default = control.enabled_default
+        self._attr_device_info = coordinator.device_info(control.device)
+
+    async def async_added_to_hass(self) -> None:
+        self.async_on_remove(self.hold.add_listener(self.async_write_ha_state))
+
+    @property
+    def available(self) -> bool:
+        # Nothing can be asserted over a dead link, so availability follows the
+        # poll even though the state does not.
+        return self.coordinator.last_update_success
+
+    def held_word(self) -> int | None:
+        """The word currently asserted, or None when released."""
+        return self.hold.word_for(self.control.number)

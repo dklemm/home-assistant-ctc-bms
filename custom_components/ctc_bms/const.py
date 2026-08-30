@@ -14,6 +14,13 @@ CONF_DEVICE_ID = "device_id"
 CONF_HEAT_PUMPS = "heat_pumps"
 CONF_ZONES = "zones"
 CONF_SETPOINTS = "setpoints"
+CONF_CONTROLS = "controls"
+# Which virtual digital input carries SmartGrid A and B. Site-specific: the
+# manual says a terminal's DI number is configured in the controller's own
+# menus, so it can only be told to us or found with `discover-di`.
+CONF_SMARTGRID_A = "smartgrid_a"
+CONF_SMARTGRID_B = "smartgrid_b"
+SMARTGRID_UNUSED = "none"
 CONF_SUBSYSTEMS = "subsystems"
 CONF_MODEL = "model"
 
@@ -43,9 +50,10 @@ MAX_BLOCK = 100
 #
 # So these entities are for settings a human changes, not for closed-loop
 # control. The manual's own answer for anything that must change often is the
-# 1000-range control registers, which are free of write-cycle cost, expire
-# after 5 minutes and are not implemented here yet. Adding a register to a
-# table below because an automation wants to drive it is the wrong fix.
+# 1000-range control registers, which are free of write-cycle cost and expire
+# after 5 minutes; those live in controls.py and hold.py, behind CONF_CONTROLS.
+# Adding a register to a table below because an automation wants to drive it is
+# the wrong fix - the right one is a control register.
 #
 # CtcEntity.async_write_raw is the single write path and drops a write that
 # would not change the register, so a repeating automation costs nothing while

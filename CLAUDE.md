@@ -17,6 +17,8 @@ address is site-specific and deliberately not recorded here.
 | `custom_components/ctc_bms/decode.py` | pure decode/encode + sentinel logic |
 | `custom_components/ctc_bms/hub.py` | all Modbus I/O: block reads, bisection, outage probe, dead cache |
 | `custom_components/ctc_bms/coordinator.py` | poll set, device split, options handling |
+| `custom_components/ctc_bms/controls.py` | hand-written: the 1000-range control registers |
+| `custom_components/ctc_bms/hold.py` | keeps a control asserted; 60 s refresh, 5 min expiry |
 | `custom_components/ctc_bms/groups.py` | hand-written: which HA device each system register lands on |
 | `custom_components/ctc_bms/models.py` | hand-written: controller model → default subsystems |
 | `custom_components/ctc_bms/overrides.py` | hand-written: per-register unit fixes + disabled-by-default |
@@ -201,21 +203,21 @@ Every writable register we ship is a **stored parameter**, and the manual warns
 that those have a limited write-cycle count ("you risk breaking the controller
 of the heat pump installation"). So the writable entities are for settings a
 human changes, not for closed-loop control, and the manual's answer for
-anything that must change often is the **1000-range control registers** (`1002`
-max RPS, `1007` DHW mode, `1015-1018` zone modes, `1100` virtual digital inputs
-for SmartGrid) — no write-cycle cost, but write-only, reset on restart and
-**reset if not refreshed within 5 minutes**. Not implemented yet; they are also
-outside the parsed range (`parse_bms.py` bounds its rows to 60000-62999).
+anything that must change often is the **1000-range control registers** — see
+the next section, which is where an automation belongs.
 
 The writable platforms are **off by default**: the config flow's `setpoints`
 step asks and defaults to False, and *stores* the answer. The fallback in
 `coordinator.py` and the options flow stays `True` on purpose — an entry
 predating that step has no stored value and must keep the entities it already
-created, the same rule the subsystem list follows. Don't "tidy" the two
-defaults into agreement; they answer different questions.
+created, the same rule the subsystem list follows. `CONF_CONTROLS` falls back to
+`False` in both places for the opposite reason: no entry predates *its* step, so
+there is nothing to preserve. Three defaults, three different questions — don't
+"tidy" any of them into agreement.
 
-Nothing writes except a service call: polling is read-only, and there is no
-write at setup, on reconnect, or on any schedule. **`CtcEntity.async_write_raw()`
+Nothing writes except a service call or a control-register refresh: polling is
+read-only, and there is no write at setup, on reconnect, or on any other
+schedule. **`CtcEntity.async_write_raw()`
 is the single write path** for all three writable platforms, and it drops a
 write whose raw word already matches the last poll — HA does not suppress a
 service call that matches current state (`switch.turn_on` on an already-on
@@ -257,6 +259,53 @@ and `sVentAwayMode` 61657 have no legend at all.
 Switch polarity follows the **register**, not HA: HP `Blocked` reads 0 when the
 pump is blocked, so `SWITCH_HP_FIELDS` maps on→0 and turning the switch on
 blocks the pump. An entity whose name and value disagree is worse.
+
+## The 1000-range controls are the opposite trade-off
+
+`controls.py` is the hand-authored table of the 36 control registers (manual
+page 22) and `hold.py` is what keeps one asserted. They cost **no write cycles**
+— this is where an automation belongs — but they are **write-only**, reset on
+controller restart, and **discarded 5 minutes after the last write**. That last
+property is the safety feature: `ControlHold` re-writes every 60 s, and a
+control nobody refreshes is undone by the controller itself. Nothing is
+re-asserted at startup, on reload, or on reconnect, and `async_shutdown()`
+writes nothing — coming up released is the fail-safe, not an oversight.
+
+The table is hand-written for the same reason `groups.py` and `names.py` are:
+`parse_bms.py` bounds its rows to 60000-62999 and reads pages 23-45, while this
+table is on page 22 with a different column set — and no **Factor** column at
+all. So every numeric control **borrows its scale from the stored parameter it
+shadows** (1002 ← 61572 `RPSMax`, 1033 ← 62001 `sStopTempDHW`), `scale_from`
+records which, and `tests/test_controls.py::test_inferred_scales_match_their_sibling`
+fails loudly if a regenerated map ever moves one. `probe 1002 400 800 --yes`
+settles any of them on hardware.
+
+**Never poll a control register.** They are write-only, so a read is silence,
+which `hub.async_read_addresses` cannot tell from a dead link — it would bisect
+through timeouts and poison `dead_addresses` for ever. They stay out of
+`_wanted` by construction, and a test pins it.
+
+**Releasing is the absence of a write, not writing 0.** The manual documents
+`0 = Economy` on 1007 and `0 = Off` on 1015-1019, so a 0 is a *command* — on a
+zone mode, the command that turns heating off. Selects therefore get an explicit
+`"Not controlled"` option; numbers read *unknown* when released and are released
+by setting them to 0, which is safe to overload because 0 is never a setting
+these registers can hold (a DHW tank at 0 °C) or, for the curve offsets, is
+exactly what released means. **1100 is the one exception** and *is* written to
+0 to release: 0 there is the documented "all 8 bits open".
+
+Register 1100 carries nine entities over **one held word** — eight virtual
+digital input switches (disabled by default) and, once the options flow says
+which bits are SmartGrid A and B, a SmartGrid select writing the manual's truth
+table. They read-modify-write the same word, so they cannot fight; two
+*masters* still can, so disable the config entry before running `probe` or
+`discover-di`. Which DI carries which function is set in the controller's own
+menus and cannot be looked up — only configured, or found with `discover-di`.
+
+Control entity names all end in **"override"**, which is what keeps them apart
+from the stored parameter beside them: the Hot Water device carries both `Mode`
+(61500, a setting) and `Mode override` (1007, a command). Those names live on
+the `Control` row, not in `names.py` — the row is hand-written already.
 
 ## Valves and booleans are a map judgement, not an HA one
 
