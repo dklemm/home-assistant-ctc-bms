@@ -14,6 +14,7 @@ from custom_components.ctc_bms.decode import is_present
 from custom_components.ctc_bms.groups import SUBSYSTEMS
 from custom_components.ctc_bms.models import DEFAULT_MODEL
 from custom_components.ctc_bms.const import (
+    CONF_CONTROLS,
     CONF_DEVICE_ID,
     CONF_HEAT_PUMPS,
     CONF_MODEL,
@@ -59,6 +60,12 @@ async def test_user_flow_creates_entry(hass):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], {CONF_SETPOINTS: True}
         )
+        # Fourth step: the 1000-range controls, a separate question.
+        assert result["type"] is FlowResultType.FORM
+        assert result["step_id"] == "controls"
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_CONTROLS: True}
+        )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "CTC (1.2.3.4)"
     assert result["data"][CONF_HEAT_PUMPS] == [1]
@@ -66,6 +73,7 @@ async def test_user_flow_creates_entry(hass):
     assert result["data"][CONF_MODEL] == "ecologic_m"
     assert result["data"][CONF_SUBSYSTEMS] == ["DHW", "AddHeat"]
     assert result["data"][CONF_SETPOINTS] is True
+    assert result["data"][CONF_CONTROLS] is True
 
 
 async def test_writable_entities_are_off_by_default(hass):
@@ -99,7 +107,20 @@ async def test_writable_entities_are_off_by_default(hass):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], {CONF_SETPOINTS: False}
         )
+        # Same rule for the control entities, for a different reason: they cost
+        # no write cycles, but holding one makes the integration write on a
+        # timer of its own.
+        assert result["step_id"] == "controls"
+        defaults = {
+            key.schema: key.default() for key in result["data_schema"].schema
+        }
+        assert defaults[CONF_CONTROLS] is False
+
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {CONF_CONTROLS: False}
+        )
     assert result["data"][CONF_SETPOINTS] is False
+    assert result["data"][CONF_CONTROLS] is False
 
 
 async def test_model_step_defaults_come_from_product_type(hass):

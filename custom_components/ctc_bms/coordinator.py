@@ -17,9 +17,12 @@ from homeassistant.helpers.update_coordinator import (
 
 from .const import (
     BINARY_SYSTEM,
+    CONF_CONTROLS,
     CONF_HEAT_PUMPS,
     CONF_MODEL,
     CONF_SETPOINTS,
+    CONF_SMARTGRID_A,
+    CONF_SMARTGRID_B,
     CONF_SUBSYSTEMS,
     CONF_ZONES,
     DEFAULT_SCAN_INTERVAL,
@@ -29,6 +32,7 @@ from .const import (
     ENUM_ZONE_FIELDS,
     MANUFACTURER,
     READ_ONLY_RW,
+    SMARTGRID_UNUSED,
     SELECT_HP_FIELDS,
     SELECT_SYSTEM,
     SELECT_ZONE_FIELDS,
@@ -40,7 +44,9 @@ from .const import (
     SWITCH_ZONE_FIELDS,
     VALVE_SYSTEM,
 )
+from .controls import CONTROLS, Control
 from .groups import SUBSYSTEMS, group_for
+from .hold import ControlHold
 from .hub import CtcConnectionError, CtcHub
 from .models import DEFAULT_MODEL, MODELS
 from .registers import (
@@ -95,6 +101,24 @@ class CtcCoordinator(DataUpdateCoordinator[dict[int, int]]):
         # entry created before that step existed has no stored value, and an
         # upgrade must not silently remove entities it already created.
         self.setpoints_enabled: bool = _option(entry, CONF_SETPOINTS, True)
+        # The 1000-range controls, and their fallback is False - the opposite
+        # of the line above, and deliberately so. CONF_SETPOINTS defaults True
+        # on read because an entry predating its step already has entities it
+        # must not lose; no entry predates *this* step, so there is nothing to
+        # preserve and off is the honest default for something that writes to
+        # the pump on a timer.
+        self.controls_enabled: bool = _option(entry, CONF_CONTROLS, False)
+        # Which bits of 1100 carry SmartGrid A and B. Site-specific - the
+        # manual is explicit that a terminal's DI number is set in the
+        # controller's own menus - so unset means no SmartGrid entity.
+        a = _option(entry, CONF_SMARTGRID_A, SMARTGRID_UNUSED)
+        b = _option(entry, CONF_SMARTGRID_B, SMARTGRID_UNUSED)
+        self.smartgrid_bits: tuple[int, int] | None = (
+            (int(a), int(b))
+            if SMARTGRID_UNUSED not in (a, b) and a != b
+            else None
+        )
+        self.hold = ControlHold(hass, hub)
         self.model: str = _option(entry, CONF_MODEL, DEFAULT_MODEL)
         # Entries created before subsystems existed have no stored list; keep
         # every subsystem so an upgrade never silently removes entities.
@@ -126,10 +150,42 @@ class CtcCoordinator(DataUpdateCoordinator[dict[int, int]]):
 
         # Poll read-only registers plus the RW ones that become writable
         # entities; the ~190 other setpoints would only bloat the poll.
+        #
+        # The 1000-range controls are absent by construction, and must stay
+        # that way: they are write-only, so a read of one is silence, which
+        # hub.async_read_addresses cannot tell from a dead link. Polling them
+        # would buy a bisection of timeouts on the first poll and a permanently
+        # polluted dead_addresses cache, for nothing.
         self._wanted: set[int] = set()
         for _key, reg in self.entity_registers():
             for i in range(reg.count):
                 self._wanted.add(reg.number + i)
+
+    def controls(self) -> list[Control]:
+        """The control registers this installation gets entities for.
+
+        No detection of its own: a control is kept when the hardware it drives
+        is already configured. Zones follow the zone list, subsystems the
+        subsystem list, and the two EcoLogic S rows the model - which, like
+        everywhere else, is a default the user can overrule, never a hard
+        filter.
+        """
+        if not self.controls_enabled:
+            return []
+        return [
+            control
+            for control in CONTROLS
+            if self._control_applies(control)
+        ]
+
+    def _control_applies(self, control: Control) -> bool:
+        if control.requires_model and control.requires_model != self.model:
+            return False
+        if control.zone is not None:
+            return control.zone in self.zones
+        if control.device in SUBSYSTEMS:
+            return control.device in self.subsystems
+        return True
 
     def entity_registers(self) -> list[tuple[str, Reg]]:
         """(device_key, Reg) for every register that becomes an entity."""

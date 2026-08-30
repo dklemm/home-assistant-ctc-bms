@@ -50,6 +50,14 @@ MODELS: dict[str, Model] = {
         "CTC EcoLogic L",
         subsystems=("DHW", "AddHeat"),
     ),
+    # The manual names EcoLogic S in every column of its register tables, and
+    # it is the only controller with the 1000/1001 start/primary-flow controls
+    # (controls.py) - it is for customers running their own logic over shunts
+    # and valves, so the BMS starts and stops the compressor itself.
+    "ecologic_s": Model(
+        "CTC EcoLogic S",
+        subsystems=("DHW", "AddHeat"),
+    ),
     "ecozenith_i250": Model(
         "CTC EcoZenith i250",
         subsystems=("DHW", "AddHeat"),

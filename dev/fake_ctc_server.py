@@ -42,7 +42,9 @@ class ControlSemantics:
       reverts to 0, as the manual says the controller does after 5 minutes.
     * **Read-back mirrors.** Real control registers are write-only; what proves
       a write landed is some *other* register moving. Mirror the documented
-      pairs so the whole loop is observable.
+      pairs so the whole loop is observable, plus the zone setpoint/mode ones,
+      which are not documented pairs but make the zone controls visible in the
+      Home Assistant UI with no heat pump attached.
 
     Implemented as a pymodbus `SimAction` rather than a data-block subclass:
     since 3.14 `ModbusDeviceContext` deep-copies the block into a `SimDevice` at
@@ -103,6 +105,13 @@ class ControlSemantics:
             put(61500, word)                 # DHW mode
         elif number == 1002:
             put(62193, word)                 # max RPS -> current RPS
+        elif 1010 <= number <= 1013:
+            # Zone heat setpoint -> that zone's primary flow setpoint. Not a
+            # documented pair; it is here so the zone controls are visible in
+            # the HA UI without a heat pump attached.
+            put(62007 + (number - 1010), word)
+        elif 1015 <= number <= 1018:
+            put(62246 + (number - 1015), word)   # zone mode -> zone status
 
 
 def main():

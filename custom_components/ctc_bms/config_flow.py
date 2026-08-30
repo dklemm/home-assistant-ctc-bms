@@ -27,10 +27,13 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_CONTROLS,
     CONF_DEVICE_ID,
     CONF_HEAT_PUMPS,
     CONF_MODEL,
     CONF_SETPOINTS,
+    CONF_SMARTGRID_A,
+    CONF_SMARTGRID_B,
     CONF_SUBSYSTEMS,
     CONF_ZONES,
     REG_PRODUCT_TYPE,
@@ -40,7 +43,9 @@ from .const import (
     DOMAIN,
     MAX_SCAN_INTERVAL,
     MIN_SCAN_INTERVAL,
+    SMARTGRID_UNUSED,
 )
+from .controls import VDI_BITS
 from .decode import is_present
 from .groups import SUBSYSTEMS
 from .hub import CtcConnectionError, CtcHub
@@ -210,15 +215,38 @@ class CtcBmsConfigFlow(ConfigFlow, domain=DOMAIN):
         the same rule the subsystem list follows.
         """
         if user_input is not None:
+            self._detected.update(user_input)
+            return await self.async_step_controls()
+
+        schema = vol.Schema(
+            {vol.Required(CONF_SETPOINTS, default=False): BooleanSelector()}
+        )
+        return self.async_show_form(step_id="setpoints", data_schema=schema)
+
+    async def async_step_controls(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Opt in to the 1000-range control entities, which default to off.
+
+        A separate question from the setpoints, because it is a different risk:
+        these registers cost no write cycles, but holding one means the
+        integration writes to a live heating system every minute of its own
+        accord - the only thing it ever does without a service call behind it.
+
+        Off by default and, unlike CONF_SETPOINTS, off as the *fallback* too
+        (see the note in coordinator.py): no config entry predates this step,
+        so there is nothing an upgrade could take away.
+        """
+        if user_input is not None:
             return self.async_create_entry(
                 title=f"CTC ({self._detected[CONF_HOST]})",
                 data={**self._detected, **user_input},
             )
 
         schema = vol.Schema(
-            {vol.Required(CONF_SETPOINTS, default=False): BooleanSelector()}
+            {vol.Required(CONF_CONTROLS, default=False): BooleanSelector()}
         )
-        return self.async_show_form(step_id="setpoints", data_schema=schema)
+        return self.async_show_form(step_id="controls", data_schema=schema)
 
     @staticmethod
     @callback
@@ -308,6 +336,43 @@ class CtcOptionsFlow(OptionsFlow):
                 vol.Required(
                     CONF_SETPOINTS, default=current(CONF_SETPOINTS, True)
                 ): BooleanSelector(),
+                # And False here for the same reason it is False in the
+                # coordinator: no entry predates the controls step, so there
+                # are no entities an upgrade could remove. The two defaults
+                # answer different questions - don't reconcile them.
+                vol.Required(
+                    CONF_CONTROLS, default=current(CONF_CONTROLS, False)
+                ): BooleanSelector(),
+                vol.Required(
+                    CONF_SMARTGRID_A,
+                    default=current(CONF_SMARTGRID_A, SMARTGRID_UNUSED),
+                ): _di_selector(),
+                vol.Required(
+                    CONF_SMARTGRID_B,
+                    default=current(CONF_SMARTGRID_B, SMARTGRID_UNUSED),
+                ): _di_selector(),
             }
         )
         return self.async_show_form(step_id="init", data_schema=schema)
+
+
+def _di_selector() -> SelectSelector:
+    """Which virtual digital input carries one half of SmartGrid.
+
+    Configuration rather than a constant because the manual is explicit that a
+    terminal's DI number is set in the controller's own menus. Leave either at
+    "Not used" and no SmartGrid entity is created; the raw input switches are
+    always there.
+    """
+    return SelectSelector(
+        SelectSelectorConfig(
+            options=[
+                SelectOptionDict(value=SMARTGRID_UNUSED, label="Not used"),
+                *(
+                    SelectOptionDict(value=str(bit), label=f"DI{bit}")
+                    for bit in VDI_BITS
+                ),
+            ],
+            mode=SelectSelectorMode.DROPDOWN,
+        )
+    )
