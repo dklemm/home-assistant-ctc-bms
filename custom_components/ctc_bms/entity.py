@@ -10,7 +10,6 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .controls import Control
 from .coordinator import CtcCoordinator
-from .decode import decode_value, is_sentinel
 from .hub import CtcConnectionError
 from .names import name_for
 from .registers import Reg
@@ -88,10 +87,7 @@ class CtcEntity(CoordinatorEntity[CtcCoordinator]):
     # NB: not named `value` - NumberEntity has a `value` property and shadowing
     # it turns the entity state into a bound method.
     def decoded_value(self) -> float | None:
-        words = self._words()
-        if words is None or is_sentinel(self.reg, words):
-            return None
-        return decode_value(self.reg, words)
+        return self.coordinator.decoded(self.reg)
 
     async def async_write_raw(self, raw: int) -> None:
         """Write one raw word to this register - unless it already holds it.

@@ -34,6 +34,8 @@ FAKE_REGISTERS: dict[int, int] = {
     # read 0 exactly as the hardware does.
     62276: s16(610),   # DHW upper = 61.0 C - the only real tank reading
     62027: s16(466),   # HP1 temp in = 46.6 C
+    62037: s16(566),   # HP1 temp out = 56.6 C -> 10.0 K across the pump
+    62193: s16(434),   # HP1 current RPS = 43.4 (compressor running)
     62186: 8,          # total operation LSB
     62187: 0,          # total operation MSB -> 8 h
     62181: 0,          # Solar mode off (R bool -> binary_sensor)

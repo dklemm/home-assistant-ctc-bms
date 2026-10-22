@@ -160,6 +160,7 @@ def main():
     put(62193, s16(434))       # HP1 current RPS = 43.4
     put32(62214, 12345)        # HP1 compressor operating time = 12345 h (32-bit)
     put(62254, 11)             # HP1 type
+    put(62291, s16(200))       # HP1 primary system flow = 20.0 l/min
     put(62331, s16(50))        # HP1 power consumption = 5.0 kW
 
     ap = argparse.ArgumentParser()

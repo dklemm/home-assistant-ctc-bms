@@ -45,6 +45,7 @@ from .const import (
     VALVE_SYSTEM,
 )
 from .controls import CONTROLS, Control
+from .decode import decode_value, is_sentinel
 from .groups import SUBSYSTEMS, group_for
 from .hold import ControlHold
 from .hub import CtcConnectionError, CtcHub
@@ -160,6 +161,14 @@ class CtcCoordinator(DataUpdateCoordinator[dict[int, int]]):
         for _key, reg in self.entity_registers():
             for i in range(reg.count):
                 self._wanted.add(reg.number + i)
+
+    def decoded(self, reg: Reg) -> float | None:
+        """A register's value from the last poll; None if absent or a sentinel."""
+        data = self.data or {}
+        words = [data.get(reg.number + i) for i in range(reg.count)]
+        if any(w is None for w in words) or is_sentinel(reg, words):
+            return None
+        return decode_value(reg, words)
 
     def controls(self) -> list[Control]:
         """The control registers this installation gets entities for.

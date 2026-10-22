@@ -2,9 +2,17 @@
 
 from __future__ import annotations
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from datetime import timedelta
+
+import pytest
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+    mock_restore_cache_with_extra_data,
+)
 
 from homeassistant.const import CONF_HOST, CONF_PORT
+from homeassistant.core import State
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
 from custom_components.ctc_bms.const import (
@@ -207,8 +215,8 @@ async def test_sensor_values(hass, mock_hub):
     assert hass.states.get(entity_id(hass, entry, "sensor", 62203)).state == (
         "unknown"
     )
-    # idle-compressor 0 is a real reading, not unknown
-    assert float(hass.states.get(entity_id(hass, entry, "sensor", 62037)).state) == 0
+    # a 0 is a real reading, not unknown (62047 is not in FAKE_REGISTERS)
+    assert float(hass.states.get(entity_id(hass, entry, "sensor", 62047)).state) == 0
 
 
 async def test_unpopulated_dhw_temperatures_read_unknown(hass, mock_hub):
@@ -624,3 +632,119 @@ async def test_an_entry_with_no_stored_choice_keeps_its_writable_entities(
     assert entity_id(hass, entry, "number", 61501)
     assert entity_id(hass, entry, "select", 61500)
     assert entity_id(hass, entry, "switch", 61521)
+
+
+# ---------------------------------------------------------------------------
+# Heat output: derived from flow and delta-T, not read from a register
+# ---------------------------------------------------------------------------
+
+# 13.2 l/min across 46.6 -> 56.6 C: 13.2 / 60 * 4.18 * 10
+HEAT_KW = 9.196
+
+
+def heat_entity_id(hass, entry, key: str) -> str:
+    eid = er.async_get(hass).async_get_entity_id(
+        "sensor", DOMAIN, f"{entry.entry_id}_hp1_{key}"
+    )
+    assert eid, f"no sensor for hp1_{key}"
+    return eid
+
+
+async def advance(hass, freezer, seconds: float) -> None:
+    freezer.tick(timedelta(seconds=seconds))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+async def test_heat_output_is_derived_from_flow_and_delta_t(hass, mock_hub):
+    entry = await setup_entry(hass)
+    eid = heat_entity_id(hass, entry, "heat_output")
+    state = hass.states.get(eid)
+    assert float(state.state) == HEAT_KW
+    assert state.attributes["unit_of_measurement"] == "kW"
+    assert state.attributes["device_class"] == "power"
+    assert state.attributes["friendly_name"] == "CTC Heat Pump 1 Heat output"
+
+
+async def test_heat_energy_sums_output_over_polls(hass, mock_hub, freezer):
+    entry = await setup_entry(hass)
+    eid = heat_entity_id(hass, entry, "heat_energy")
+    state = hass.states.get(eid)
+    assert float(state.state) == 0.0
+    assert state.attributes["unit_of_measurement"] == "kWh"
+    assert state.attributes["device_class"] == "energy"
+    assert state.attributes["state_class"] == "total_increasing"
+
+    await advance(hass, freezer, 30)
+    assert float(hass.states.get(eid).state) == pytest.approx(
+        HEAT_KW * 30 / 3600, abs=1e-3
+    )
+
+
+async def test_heat_energy_skips_a_gap(hass, mock_hub, freezer):
+    """An outage must not be filled in with heat nobody measured."""
+    entry = await setup_entry(hass)
+    eid = heat_entity_id(hass, entry, "heat_energy")
+    await advance(hass, freezer, 30)
+    before = float(hass.states.get(eid).state)
+    # Move the clock without the poll seeing it, as a stalled link would.
+    freezer.tick(timedelta(hours=1))
+    await advance(hass, freezer, 30)
+    assert float(hass.states.get(eid).state) == before
+    # ...and summing resumes from the first poll after it.
+    await advance(hass, freezer, 30)
+    assert float(hass.states.get(eid).state) == pytest.approx(
+        before + HEAT_KW * 30 / 3600, abs=1e-3
+    )
+
+
+async def test_stopped_compressor_adds_no_heat(
+    hass, mock_hub, fake_registers, freezer
+):
+    fake_registers[62193] = 0
+    entry = await setup_entry(hass)
+    assert float(hass.states.get(heat_entity_id(hass, entry, "heat_output")).state) == 0
+    await advance(hass, freezer, 30)
+    eid = heat_entity_id(hass, entry, "heat_energy")
+    assert float(hass.states.get(eid).state) == 0
+
+
+async def test_heat_energy_continues_from_its_restored_total(
+    hass, mock_hub, freezer
+):
+    registry = er.async_get(hass)
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="1.2.3.4:502:1",
+        data={
+            CONF_HOST: "1.2.3.4",
+            CONF_PORT: 502,
+            CONF_DEVICE_ID: 1,
+            CONF_HEAT_PUMPS: [1],
+            CONF_ZONES: [1],
+        },
+    )
+    entry.add_to_hass(hass)
+    registry.async_get_or_create(
+        "sensor",
+        DOMAIN,
+        f"{entry.entry_id}_hp1_heat_energy",
+        config_entry=entry,
+        suggested_object_id="heat_energy",
+    )
+    mock_restore_cache_with_extra_data(
+        hass,
+        [
+            (
+                State("sensor.heat_energy", "100.0"),
+                {"native_value": 100.0, "native_unit_of_measurement": "kWh"},
+            )
+        ],
+    )
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert float(hass.states.get("sensor.heat_energy").state) == 100.0
+    await advance(hass, freezer, 30)
+    assert float(hass.states.get("sensor.heat_energy").state) == pytest.approx(
+        100.0 + HEAT_KW * 30 / 3600, abs=1e-3
+    )

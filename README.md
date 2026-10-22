@@ -55,6 +55,12 @@ platform, no templates:
   leaving the others at 0 — so *Hot Water → Temperature* could read 0.0 °C
   beside a tank at 61 °C. Those read *unknown* now, and the one your tank
   actually reports through shows the real value.
+- **Heat output and heat energy** per heat pump, calculated from the primary
+  flow and the temperature rise across the pump:
+  `kW = l/min ÷ 60 × 4.18 × (out − in)`. The pump reports only its electrical
+  power, so this is derived, not read. It counts only while the compressor
+  runs, and *Heat energy* (kWh) only ever rises, so you can add it to the
+  Energy dashboard.
 
 The register map (554 registers) is generated from CTC's official BMS manual
 (*User Manual-BMS Manual-16260016*), not copied from other integrations.

@@ -23,6 +23,7 @@ address is site-specific and deliberately not recorded here.
 | `custom_components/ctc_bms/models.py` | hand-written: controller model → default subsystems |
 | `custom_components/ctc_bms/overrides.py` | hand-written: per-register unit fixes + disabled-by-default |
 | `custom_components/ctc_bms/names.py` | hand-written: the entity name for every register that ships |
+| `custom_components/ctc_bms/heat.py` | pure: heat output (kW) from flow and ΔT |
 | `dev/scripts/parse_bms.py` | BMS manual PDF → `dev/bms_registers.json` |
 | `dev/scripts/gen_registers.py` | `dev/bms_registers.json` → `registers.py` |
 | `dev/fake_ctc_server.py` | simulator on 127.0.0.1:5020 (`--port` to change) |
@@ -306,6 +307,24 @@ Control entity names all end in **"override"**, which is what keeps them apart
 from the stored parameter beside them: the Hot Water device carries both `Mode`
 (61500, a setting) and `Mode override` (1007, a command). Those names live on
 the `Control` row, not in `names.py` — the row is hand-written already.
+
+## Heat output is derived, not read
+
+The controller reports electrical power (62331) and energy (62341) per heat
+pump, but not heat. `heat.py` calculates it from four HP fields that are
+already polled: `PrimarySystemFlow` × 4.18 kJ/(L·K) × (`TempOut` − `TempIn`).
+62291 tracks real flow on the EcoLogic M. The result is 0 while `CurrRPS` is 0,
+because an idle charge pump's ΔT is sensor noise.
+
+`CtcHeatEnergySensor` sums that output over polls (a left Riemann sum) and
+restores its total across restarts. A negative output (defrost) is shown in kW
+but not subtracted, so the kWh stays `TOTAL_INCREASING`. A gap longer than two
+scan intervals adds nothing: an outage must not be filled in with heat nobody
+measured.
+
+These two are the only polled entities whose unique_id is not a register number
+(`{entry_id}_hpN_heat_output` / `_heat_energy`). `_drop_reclassified_entities`
+never sees them, and `names.py` has no entry for them.
 
 ## Valves and booleans are a map judgement, not an HA one
 
